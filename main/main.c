@@ -47,6 +47,9 @@
 #endif
 
 
+extern void frmMain(void);
+
+
 /*********************
  *      DEFINES
  *********************/
@@ -200,7 +203,8 @@ static void create_demo_application(void)
     /* Otherwise we show the selected demo */
 
     #if defined CONFIG_LV_USE_DEMO_WIDGETS
-        lv_demo_widgets();
+    	frmMain();
+       // lv_demo_widgets();
         //lv_demo_printer();
     #elif defined CONFIG_LV_USE_DEMO_KEYPAD_AND_ENCODER
         lv_demo_keypad_encoder();
