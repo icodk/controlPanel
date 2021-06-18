@@ -63,7 +63,7 @@ extern void frmMain(void);
  **********************/
 static void lv_tick_task(void *arg);
 static void guiTask(void *pvParameter);
-static void create_demo_application(void);
+//static void create_demo_application(void);
 
 /**********************
  *   APPLICATION MAIN
@@ -153,6 +153,7 @@ static void guiTask(void *pvParameter) {
     lv_indev_drv_register(&indev_drv);
 #endif
 
+
     /* Create and start a periodic timer interrupt to call lv_tick_inc */
     const esp_timer_create_args_t periodic_timer_args = {
         .callback = &lv_tick_task,
@@ -164,17 +165,17 @@ static void guiTask(void *pvParameter) {
 
     /* Create the demo application */
    // create_demo_application();
-    //frmMain();
-    printf("\n*\n");
+    frmMain();
+
     while (1) {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */
 
-        printf("*");
+
         fflush(stdout);
         /* Try to take the semaphore, call lvgl related function on success */
         if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
             lv_task_handler();
-            printf("-");
+            //printf("-");
             xSemaphoreGive(xGuiSemaphore);
        }
         vTaskDelay(pdMS_TO_TICKS(10));

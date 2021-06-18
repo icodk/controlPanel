@@ -88,6 +88,7 @@ bool xpt2046_read(lv_indev_drv_t * drv, lv_indev_data_t * data)
 
     int16_t x = last_x;
     int16_t y = last_y;
+
     if (xpt2048_is_touch_detected() == TOUCH_DETECTED)
     {
         valid = true;

@@ -35,18 +35,18 @@ void frmMain(void)
 	fflush(stdout);
 
 	/*Create a window*/
-	  lv_obj_t * win = lv_win_create(lv_scr_act(), 40);
+	  lv_obj_t * win = lv_win_create(lv_scr_act(), 30);
 
 	        lv_obj_t * btn;
-	        btn = lv_win_add_btn(win, LV_SYMBOL_LIST, 40);
+	        btn = lv_win_add_btn(win, LV_SYMBOL_LIST, 30);
 	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
 	        lv_win_add_title(win, "A title");
 
-	        btn = lv_win_add_btn(win, LV_SYMBOL_BARS, 40);
+	        btn = lv_win_add_btn(win, LV_SYMBOL_BARS, 30);
 	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
-	        btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE, 60);
+	        btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE, 40);
 	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
 	        lv_obj_t * cont = lv_win_get_content(win);  /*Content can be aded here*/
