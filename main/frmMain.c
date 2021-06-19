@@ -24,6 +24,8 @@ static void event_handler(lv_event_t * e)
 {
     lv_obj_t * obj = lv_event_get_target(e);
     LV_LOG_USER("Button %d clicked", lv_obj_get_child_id(obj));
+    printf("Button %d clicked", lv_obj_get_child_id(obj));
+
 }
 
 
@@ -38,15 +40,15 @@ void frmMain(void)
 	  lv_obj_t * win = lv_win_create(lv_scr_act(), 30);
 
 	        lv_obj_t * btn;
-	        btn = lv_win_add_btn(win, LV_SYMBOL_LIST, 30);
-	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+//	        btn = lv_win_add_btn(win, LV_SYMBOL_LIST, 30);
+//	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
-	        lv_win_add_title(win, "A title");
+	        lv_win_add_title(win, "Process");
 
-	        btn = lv_win_add_btn(win, LV_SYMBOL_BARS, 30);
-	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+//	        btn = lv_win_add_btn(win, LV_SYMBOL_BARS, 30);
+//	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
-	        btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE, 40);
+	        btn = lv_win_add_btn(win, LV_SYMBOL_SETTINGS, 40);
 	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
 	        lv_obj_t * cont = lv_win_get_content(win);  /*Content can be aded here*/
