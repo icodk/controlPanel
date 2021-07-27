@@ -48,7 +48,7 @@
 //    #endif
 //#endif
 
-extern void frmMain(void);
+extern void frmMain_init(void);
 
 
 /*********************
@@ -164,7 +164,7 @@ static void guiTask(void *pvParameter) {
 
     /* Create the demo application */
    // create_demo_application();
-    frmMain();
+    frmMain_init();
 
     while (1) {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */
