@@ -105,20 +105,66 @@ static void init_styles(void) {
     font_large = LV_FONT_DEFAULT;
     font_normal = LV_FONT_DEFAULT;
 }
-static void event_handler(lv_event_t * e)
+
+
+static void resetMsgBox_event_cb(lv_event_t* e)
 {
-    lv_obj_t * obj = lv_event_get_target(e);
+    lv_obj_t* obj = lv_event_get_current_target(e);
+    //LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
+    LV_LOG_USER("Event code: %d ",e->code );
+
+    if (e->code == LV_EVENT_DELETE) {
+
+            return;
+   }
+   else { // reset was pressed
+
+        int32_t* cVal = get_current_temp(REG_0);
+        (*cVal)=0;
+       lv_msgbox_close(obj);
+
+   }
+
+
+
+    /*if (e->code == LV_EVENT_DELETE) {
+        msgBoxOn = false;
+    }else
+
+    }*/
+}
+//------------------
+
+
+
+
+
+
+void resetMsgBox(lv_event_t* e)
+{
+    static const char* btns[] = { "Reset", "" };
+
+    lv_obj_t* mbox1 = lv_msgbox_create(NULL, "Reset Counter", "Click Reset to reset counter.", btns, true);
+    //mbox1->user_data = 1;
+    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_DELETE/*LV_EVENT_ALL*/, NULL);
+    //lv_obj_add_event_cb(mbox1, msgBox_event_cb, LV_EVENT_CLICKED, NULL);
+   // lv_obj_set_style_border_width(mbox1, LV_PART_MAIN, LV_STATE_DEFAULT, 2);
+
+    lv_obj_center(mbox1);
+}
+
+static void cfg_btn_event_handler(lv_event_t * e)
+{
+   //lv_obj_t * obj = lv_event_get_target(e);
     LV_LOG_USER("Button %d clicked", lv_obj_get_child_id(obj));
-    printf("Button %d clicked", lv_obj_get_child_id(obj));
+   // msgBoxShow();
 
 }
 
+
 static void drawFrmMain(){
 
-
-	if (win != NULL) {
-	        lv_obj_del(win);
-	    }
 	    win = lv_win_create(lv_scr_act(), 30);
 
 
@@ -127,7 +173,8 @@ static void drawFrmMain(){
 	    // settings button
 	    lv_obj_t* btn;
 	    btn = lv_win_add_btn(win, LV_SYMBOL_SETTINGS, 40);
-	    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+	    //lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+	    lv_obj_add_event_cb(btn, cfg_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
 
 	    // PANEL
@@ -136,6 +183,7 @@ static void drawFrmMain(){
 	    lv_obj_set_size(panel, 150, 40);
 	    lv_obj_align(panel, LV_ALIGN_TOP_LEFT, 5, 5);
 	    lv_obj_add_style(panel, &style_panel, 0);
+	    lv_obj_add_event_cb(panel, resetMsgBox, LV_EVENT_CLICKED, NULL);
 
 	    // LABEL
 	    lv_obj_t* label = lv_label_create(panel);
@@ -145,24 +193,30 @@ static void drawFrmMain(){
 
 
 	    // DATA
-	    lv_obj_t* data= lv_label_create(panel);
-	    int32_t *cVal= get_current_temp(REG_0);
-	        (*cVal)++;
-
-
-	        lv_label_set_text_fmt(data, "%d",*cVal);
-	    //lv_label_set_text(data, "12.34:56");
-	    lv_obj_align(data, LV_ALIGN_RIGHT_MID,-10, 0);
-	    lv_obj_add_style(data, &style_data, 0);
+	    temp_regulator_t* reg= get_reguator(REG_0);
+	    reg->displayField = lv_label_create(panel);
+		//
+		lv_obj_align(reg->displayField, LV_ALIGN_RIGHT_MID, -10, 0);
+		lv_obj_add_style(reg->displayField, &style_data, 0);
 
 
 }
 
 
+static void     updateFrmMain(void) {
+
+    temp_regulator_t* reg = get_reguator(REG_0);
+    int32_t* cVal = get_current_temp(REG_0);
+    (*cVal)++;
+
+    lv_label_set_text_fmt(reg->displayField, "%d", *cVal);
+
+}
+
 static void timer_cb(lv_timer_t* timer)
 {
-    reg_id_t regId;
-    drawFrmMain();
+    //reg_id_t regId;
+    updateFrmMain();
     //LV_LOG_USER("Timer was called ");
 }
 
@@ -174,37 +228,7 @@ void frmMain_init(void)
     init_styles();
     drawFrmMain();
     lv_timer_create(timer_cb, 100, NULL);
-//    //--prepare the main window
-//    lv_obj_t * win = lv_win_create(lv_scr_act(), 30);
-//    // window content
-//    lv_win_add_title(win, "Process");
-//    // settings button
-//    lv_obj_t* btn;
-//    btn = lv_win_add_btn(win, LV_SYMBOL_SETTINGS, 40);
-//    lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-//
-//
-//    // PANEL
-//    lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
-//    lv_obj_t* panel=lv_obj_create(wcont);
-//    lv_obj_set_size(panel, 150, 40);
-//    lv_obj_align(panel, LV_ALIGN_TOP_LEFT, 5, 5);
-//    lv_obj_add_style(panel, &style_panel, 0);
-//
-//    // LABEL
-//    lv_obj_t* label = lv_label_create(panel);
-//    lv_label_set_text(label, "Temp 1:");
-//    lv_obj_align(label, LV_ALIGN_LEFT_MID, 5, 0);
-//    lv_obj_add_style(label, &style_label, 0);
-//
-//
-//    // DATA
-//    lv_obj_t* data= lv_label_create(panel);
-//    lv_label_set_text(data, "12.3456");
-//    lv_obj_align(data, LV_ALIGN_RIGHT_MID,-10, 0);
-//    lv_obj_add_style(data, &style_data, 0);
-//
-//
+
 
 }
 
@@ -217,46 +241,3 @@ void frmMain_init(void)
 
 
 
-void frmMain_1(void)
-{
-
-
-	printf("\n============================= 1");
-	fflush(stdout);
-
-	/*Create a window*/
-	  lv_obj_t * win = lv_win_create(lv_scr_act(), 30);
-
-	        lv_obj_t * btn;
-//	        btn = lv_win_add_btn(win, LV_SYMBOL_LIST, 30);
-//	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-
-	        lv_win_add_title(win, "Process");
-
-//	        btn = lv_win_add_btn(win, LV_SYMBOL_BARS, 30);
-//	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-
-	        btn = lv_win_add_btn(win, LV_SYMBOL_SETTINGS, 40);
-	        lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-
-	        lv_obj_t * cont = lv_win_get_content(win);  /*Content can be aded here*/
-	        lv_obj_t * label =  lv_label_create(cont);
-	        lv_label_set_text(label, "This is\n"
-	                                 "a pretty\n"
-	                                 "long text\n"
-	                                 "to see how\n"
-	                                 "the window\n"
-	                                 "becomes\n"
-	                                 "scrollable.\n"
-	                                 "\n"
-	                                 "\n"
-	                                 "Some more\n"
-	                                 "text to be\n"
-	                                 "sure it\n"
-	                                 "overflows. :)");
-
-
-	        printf("\n============================= 2");
-	        	fflush(stdout);
-
-}

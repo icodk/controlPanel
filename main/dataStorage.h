@@ -25,7 +25,7 @@ typedef struct TEMP_REGULATOR {
     uint32_t Kp;
     uint32_t Ki;
     uint32_t Kd;
-
+    lv_obj_t* displayField;
 } temp_regulator_t;
 
 
