@@ -12,19 +12,26 @@
 
 #include "lvgl/lvgl.h"
 
-#define REGULATOR_COUNT 10
-typedef enum _REGS_ID {
-    REG_0,
-    REG_1,
-    REG_2
 
+typedef enum _REGS_ID {
+	 	REG_0,
+	    REG_1,
+	    REG_2,
+	    REG_3,
+	    REG_4,
+	    REG_5,
+		REG_COUNT
 } reg_id_t;
+
+#define REGULATOR_COUNT REG_COUNT
 
 typedef struct TEMP_REGULATOR {
     uint32_t setpoint;
     uint32_t Kp;
     uint32_t Ki;
     uint32_t Kd;
+    int32_t min;
+    int32_t max;
     lv_obj_t* displayField;
 } temp_regulator_t;
 

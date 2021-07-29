@@ -119,7 +119,7 @@ static void resetMsgBox_event_cb(lv_event_t* e)
    }
    else { // reset was pressed
 
-        int32_t* cVal = get_current_temp(REG_0);
+        int32_t* cVal = get_current_temp((reg_id_t)(e->user_data));
         (*cVal)=0;
        lv_msgbox_close(obj);
 
@@ -142,24 +142,24 @@ static void resetMsgBox_event_cb(lv_event_t* e)
 
 void resetMsgBox(lv_event_t* e)
 {
-    static const char* btns[] = { "Reset", "" };
+	 static const char* btns[] = { "Reset", "" };
 
-    lv_obj_t* mbox1 = lv_msgbox_create(NULL, "Reset Counter", "Click Reset to reset counter.", btns, true);
-    //mbox1->user_data = 1;
-    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_DELETE/*LV_EVENT_ALL*/, NULL);
-    //lv_obj_add_event_cb(mbox1, msgBox_event_cb, LV_EVENT_CLICKED, NULL);
-   // lv_obj_set_style_border_width(mbox1, LV_PART_MAIN, LV_STATE_DEFAULT, 2);
+	    lv_obj_t* mbox1 = lv_msgbox_create(NULL, "Reset Counter", "Click Reset to reset counter.", btns, true);
+	    //mbox1->user_data = 1;
+	    lv_label_set_text_fmt(lv_msgbox_get_title(mbox1), "Reset Counter: %d",1+ (int)e->user_data);
+	    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_VALUE_CHANGED, e->user_data);
+	    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_DELETE/*LV_EVENT_ALL*/, e->user_data);
+	    //lv_obj_add_event_cb(mbox1, msgBox_event_cb, LV_EVENT_CLICKED, NULL);
+	    //lv_obj_set_style_border_width(mbox1, LV_PART_MAIN, LV_STATE_DEFAULT, 2);
 
-    lv_obj_center(mbox1);
+	    lv_obj_center(mbox1);
 }
 
 static void cfg_btn_event_handler(lv_event_t * e)
 {
-   //lv_obj_t * obj = lv_event_get_target(e);
-    LV_LOG_USER("Button %d clicked", lv_obj_get_child_id(obj));
-   // msgBoxShow();
-
+	lv_obj_t * obj = lv_event_get_target(e);
+	    LV_LOG_USER("Event code %d", e->code);
+	    //resetMsgBox();
 }
 
 
@@ -176,28 +176,34 @@ static void drawFrmMain(){
 	    //lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 	    lv_obj_add_event_cb(btn, cfg_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
+	    for (int i = 0; i < REGULATOR_COUNT; i++) {
+	            // PANEL
+	            lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
+	            lv_obj_t* panel = lv_obj_create(wcont);
+	            lv_obj_set_size(panel, 250, 40);
+	            lv_obj_align(panel, LV_ALIGN_TOP_LEFT,5, i*50 + 5);
+	            lv_obj_add_style(panel, &style_panel, 0);
+	            lv_obj_add_event_cb(panel, resetMsgBox, LV_EVENT_LONG_PRESSED, (void *)i);
 
-	    // PANEL
-	    lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
-	    lv_obj_t* panel=lv_obj_create(wcont);
-	    lv_obj_set_size(panel, 150, 40);
-	    lv_obj_align(panel, LV_ALIGN_TOP_LEFT, 5, 5);
-	    lv_obj_add_style(panel, &style_panel, 0);
-	    lv_obj_add_event_cb(panel, resetMsgBox, LV_EVENT_CLICKED, NULL);
+	            // LABEL
+	            lv_obj_t* label = lv_label_create(panel);
+	            lv_label_set_text_fmt(label, "Counter %d ",i+1);
 
-	    // LABEL
-	    lv_obj_t* label = lv_label_create(panel);
-	    lv_label_set_text(label, "Temp 1:");
-	    lv_obj_align(label, LV_ALIGN_LEFT_MID, 5, 0);
-	    lv_obj_add_style(label, &style_label, 0);
+	            lv_obj_align(label, LV_ALIGN_LEFT_MID, 5, 0);
+	            lv_obj_add_style(label, &style_label, 0);
 
 
-	    // DATA
-	    temp_regulator_t* reg= get_reguator(REG_0);
-	    reg->displayField = lv_label_create(panel);
-		//
-		lv_obj_align(reg->displayField, LV_ALIGN_RIGHT_MID, -10, 0);
-		lv_obj_add_style(reg->displayField, &style_data, 0);
+	            // DATA
+	            temp_regulator_t* reg = get_reguator(i);
+	            reg->displayField = lv_label_create(panel);
+
+
+	            //
+	            //lv_label_set_text_fmt(reg->displayField, "%d",*cVal);
+	            lv_obj_align(reg->displayField, LV_ALIGN_RIGHT_MID, -10, 0);
+	            lv_obj_add_style(reg->displayField, &style_data, 0);
+	        }
+
 
 
 }
@@ -205,11 +211,13 @@ static void drawFrmMain(){
 
 static void     updateFrmMain(void) {
 
-    temp_regulator_t* reg = get_reguator(REG_0);
-    int32_t* cVal = get_current_temp(REG_0);
-    (*cVal)++;
+	 for (int i = 0; i < REGULATOR_COUNT; i++) {
+		temp_regulator_t* reg = get_reguator(i);
+		int32_t* cVal = get_current_temp(i);
+		(*cVal)++;
+		lv_label_set_text_fmt(reg->displayField, "%d", *cVal);
+	}
 
-    lv_label_set_text_fmt(reg->displayField, "%d", *cVal);
 
 }
 
