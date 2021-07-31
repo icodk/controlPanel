@@ -151,6 +151,8 @@ void resetMsgBox(lv_event_t* e)
 	    lv_obj_add_event_cb(mbox1, resetMsgBox_event_cb, LV_EVENT_DELETE/*LV_EVENT_ALL*/, e->user_data);
 	    //lv_obj_add_event_cb(mbox1, msgBox_event_cb, LV_EVENT_CLICKED, NULL);
 	    //lv_obj_set_style_border_width(mbox1, LV_PART_MAIN, LV_STATE_DEFAULT, 2);
+	    lv_obj_set_style_border_width(mbox1, 5, LV_STATE_DEFAULT);
+	    lv_obj_set_style_border_color(mbox1, lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN);
 
 	    lv_obj_center(mbox1);
 }
