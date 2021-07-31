@@ -4,8 +4,8 @@
 #include "dataStorage.h"
 
 
-temp_regulator_t temp_reg[REGULATOR_COUNT];
-int32_t current_temp[REGULATOR_COUNT];
+counter_t counter[COUNTER_COUNT];
+int32_t current_count[COUNTER_COUNT];
 
 
 //---------------------------------
@@ -17,14 +17,14 @@ void loadSettings(void) {
 
 }
 //----------------------------------
-temp_regulator_t* get_reguator(counter_id_t regNdx) {
+counter_t* get_counter(counter_id_t cntId) {
 
-    return &temp_reg[regNdx];
+    return &counter[cntId];
 }
 //----------------------------------
-int32_t* get_current_temp(counter_id_t regNdx) {
+int32_t* get_current_count(counter_id_t cntId) {
 
-    return &current_temp[regNdx];
+    return &current_count[cntId];
 }
 //----------------------------------
 //----------------------------------

@@ -24,7 +24,7 @@ static void resetMsgBox_event_cb(lv_event_t* e)
    }
    else { // reset was pressed
        
-        int32_t* cVal = get_current_temp((counter_id_t)(e->user_data));
+        int32_t* cVal = get_current_count((counter_id_t)(e->user_data));
         (*cVal)=0;
        lv_msgbox_close(obj);
 
@@ -90,7 +90,7 @@ static void drawFrmMain(lv_obj_t* win) {
     btn = lv_win_add_btn(win, LV_SYMBOL_SETTINGS, 40);
   //  lv_obj_add_event_cb(btn, cfg_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
-    for (int i = 0; i < REGULATOR_COUNT; i++) {
+    for (int i = 0; i < COUNTER_COUNT; i++) {
         // PANEL
         lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
         lv_obj_t* panel = lv_obj_create(wcont);
@@ -109,14 +109,14 @@ static void drawFrmMain(lv_obj_t* win) {
 
 
         // DATA
-        temp_regulator_t* reg = get_reguator(i);
-        reg->displayField = lv_label_create(panel);
+        counter_t* cnt = get_counter(i);
+        cnt->displayField = lv_label_create(panel);
 
 
         //
         //lv_label_set_text_fmt(reg->displayField, "%d",*cVal);
-        lv_obj_align(reg->displayField, LV_ALIGN_RIGHT_MID, -10, 0);
-        lv_obj_add_style(reg->displayField, get_style_data(), 0);
+        lv_obj_align(cnt->displayField, LV_ALIGN_RIGHT_MID, -10, 0);
+        lv_obj_add_style(cnt->displayField, get_style_data(), 0);
     }
 
     
@@ -124,11 +124,11 @@ static void drawFrmMain(lv_obj_t* win) {
 
 static void     updateFrmMain(void) {
 
-    for (int i = 0; i < REGULATOR_COUNT; i++) {
-        temp_regulator_t* reg = get_reguator(i);
-        int32_t* cVal = get_current_temp(i);
+    for (int i = 0; i < COUNTER_COUNT; i++) {
+        counter_t* cnt= get_counter(i);
+        int32_t* cVal = get_current_count(i);
         (*cVal)++;
-        lv_label_set_text_fmt(reg->displayField, "%d", *cVal);
+        lv_label_set_text_fmt(cnt->displayField, "%d", *cVal);
     }
     
     
