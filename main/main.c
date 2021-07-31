@@ -30,6 +30,7 @@
 
 
 #include "lvgl_helpers.h"
+#include "ui_common.c"
 
 //#include "lv_examples/src/lv_demo_printer/lv_demo_printer.h"
 //
@@ -164,6 +165,7 @@ static void guiTask(void *pvParameter) {
 
     /* Create the demo application */
    // create_demo_application();
+    ui_common_init();
     frmMain_init();
 
     while (1) {

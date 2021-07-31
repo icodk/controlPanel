@@ -1,27 +1,19 @@
-#pragma once
-/*
- * data_struct.h
- *
- *  Created on: 26. jul. 2021
- *      Author: ico
- */
-
-#ifndef MAIN_DATASTORAGE_H_
-#define MAIN_DATASTORAGE_H_
+﻿#pragma once
 
 
 #include "lvgl/lvgl.h"
 
 
 typedef enum _REGS_ID {
-	 	REG_0,
-	    REG_1,
-	    REG_2,
-	    REG_3,
-	    REG_4,
-	    REG_5,
-		REG_COUNT
-} reg_id_t;
+    REG_0,
+    REG_1,
+    REG_2,
+    REG_3,
+    REG_4,
+    REG_5,
+    REG_COUNT
+
+} counter_id_t;
 
 #define REGULATOR_COUNT REG_COUNT
 
@@ -33,14 +25,11 @@ typedef struct TEMP_REGULATOR {
     int32_t min;
     int32_t max;
     lv_obj_t* displayField;
+
+
 } temp_regulator_t;
 
 
 void loadSettings(void);
-temp_regulator_t* get_reguator(reg_id_t regId);
-int32_t* get_current_temp(reg_id_t regNdx);
-
-
-
-
-#endif /* MAIN_DATASTORAGE_H_ */
+temp_regulator_t* get_reguator(counter_id_t regId);
+int32_t* get_current_temp(counter_id_t regNdx);
