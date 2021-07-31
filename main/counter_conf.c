@@ -55,7 +55,7 @@ static void resetMsgBox(lv_event_t* e)
 static void     updateFrmConfig(void) {
     counter_t* reg = get_counter(counterId);
     int32_t* cVal = get_current_count(counterId);
-    (*cVal)++;
+    //(*cVal)++;
     lv_label_set_text_fmt(reg->displayField, "%d", *cVal);
 
 }

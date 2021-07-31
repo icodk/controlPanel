@@ -49,7 +49,9 @@
 //    #endif
 //#endif
 
+extern void processMain(void);
 extern void frmMain_init(void);
+
 
 
 /*********************
@@ -68,6 +70,11 @@ static void guiTask(void *pvParameter);
 /**********************
  *   APPLICATION MAIN
  **********************/
+
+//static void processMain(void){
+//
+//}
+
 void app_main() {
 
     /* If you want to use a task to create the graphic, you NEED to create a Pinned task
@@ -177,6 +184,7 @@ static void guiTask(void *pvParameter) {
         if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
             lv_task_handler();
             //printf("-");
+            processMain();
             xSemaphoreGive(xGuiSemaphore);
        }
         vTaskDelay(pdMS_TO_TICKS(10));
