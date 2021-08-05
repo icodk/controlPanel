@@ -62,6 +62,7 @@ static void ta_event_cb(lv_event_t * e)
         lv_obj_set_height(win, LV_VER_RES);
         lv_obj_clear_flag(counterPanel, LV_OBJ_FLAG_HIDDEN); // show the counter after editing was finished
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_state(ta, LV_STATE_FOCUSED);
         //---- save the values to the fields
         
         const char* txt = lv_textarea_get_text(ta);
