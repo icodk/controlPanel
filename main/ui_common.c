@@ -4,6 +4,8 @@
 #include "dataStorage.h"
 #include "ui_common.h"
 
+const char* NUMERIC_RANGE = "0123456789";
+
 LV_FONT_DECLARE(DSEG7_classic_bold_25);
 static lv_style_t style_panel = { 0 };
 static lv_style_t style_data;
@@ -62,7 +64,7 @@ static void init_common_styles(void) {
     lv_style_set_pad_all(&style_data, 2);
 
     //lv_style_set_text_color(&style_data, lv_palette_main(LV_PALETTE_GREEN));
-    //lv_style_set_text_color(&style_data, lv_palette_lighten(LV_PALETTE_GREEN, 5));
+    //lv_style_set_text_color(&style_data, lv_palette_lighten(LV_PALETTE_GREEN, 2));
     lv_style_set_text_color(&style_data, lv_palette_lighten(LV_PALETTE_YELLOW,2));
     // lv_style_set_bg_color(&style_data, lv_color_black());
      //lv_style_set_bg_color(&style_data, lv_palette_main(LV_PALETTE_RED));

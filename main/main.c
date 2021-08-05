@@ -19,6 +19,7 @@
 #include "freertos/semphr.h"
 #include "esp_system.h"
 #include "driver/gpio.h"
+#include "text_table.h"
 
 
 /* Littlevgl specific */
@@ -173,6 +174,7 @@ static void guiTask(void *pvParameter) {
     /* Create the demo application */
    // create_demo_application();
     ui_common_init();
+    load_language();
     frmMain_init();
 
     while (1) {

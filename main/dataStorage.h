@@ -24,6 +24,7 @@ typedef struct _COUNTER{
     uint32_t Kd;
     int32_t min;
     int32_t max;
+    int32_t param;
     lv_obj_t* displayField;
 
 
