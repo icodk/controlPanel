@@ -62,6 +62,8 @@ void saveSettings(void) {
 				printf("\nError reading %s (%d)",STORAGE_KEAY,err);
 				return ;
 			}
+
+			printf("\nData saved...to %s",STORAGE_KEAY);
 			nvs_close(my_handle);
 
 

@@ -65,9 +65,13 @@ static void ta_event_cb(lv_event_t * e)
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_state(ta, LV_STATE_FOCUSED);
         //---- save the values to the fields
-        toSave=true;
+
         const char* txt = lv_textarea_get_text(ta);
-        *field = (int32_t)atoi(txt);
+        if(*field !=(int32_t)atoi(txt)){
+        	*field = (int32_t)atoi(txt);
+        	toSave=true;
+        }
+
        
 
 
