@@ -1,0 +1,56 @@
+﻿
+#ifndef LV_TEXT_TABLE_H
+#define LV_TEXT_TABLE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+	/*********************
+	*      INCLUDES
+	*********************/
+#include "dataStorage.h"
+	/*********************
+	*      DEFINES
+	*********************/
+
+#define LANGUAGE_COUNT  5		// number of languages
+
+#define DEFAULT_LANG	0		// default language if not initialized
+
+	/**********************
+	*      TYPEDEFS
+	**********************/
+
+
+	typedef enum {
+		T_NONE
+		, T_LANG
+		, T_MIN
+        , T_MAX
+        , T_COUNTER
+        , T_RESET
+        , T_CLICK_TO_RESET
+        , T_RESET_COUNTER_X
+        , T_CONFIG
+        , T_PARAM
+        , T_PROCESS
+
+
+	} text_ndx_t;
+
+	
+	/**********************
+	* GLOBAL PROTOTYPES
+	**********************/
+	
+	void load_language(void);
+	const  char *get_text(text_ndx_t  Ndx);
+	
+	
+
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif /*LV_TEXT_TABLE_H*/

@@ -13,6 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "nvs_flash.h"
+#include "nvs.h"
+//#include "nvs_handle.hpp"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_freertos_hooks.h"
@@ -175,6 +179,7 @@ static void guiTask(void *pvParameter) {
    // create_demo_application();
     ui_common_init();
     load_language();
+    loadSettings();
     frmMain_init();
 
     while (1) {
