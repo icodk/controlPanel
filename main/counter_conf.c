@@ -13,6 +13,7 @@ static counter_id_t counterId;
 static lv_obj_t* kb;
 static lv_obj_t* counterPanel;
 static const char* int_fmt = "%d";
+static bool toSave;
 //----------------------------------------------
 //static void saveValue(lv_obj_t* ta) {
 //
@@ -64,7 +65,7 @@ static void ta_event_cb(lv_event_t * e)
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_state(ta, LV_STATE_FOCUSED);
         //---- save the values to the fields
-        
+        toSave=true;
         const char* txt = lv_textarea_get_text(ta);
         *field = (int32_t)atoi(txt);
        
@@ -95,7 +96,9 @@ static void ta_event_cb(lv_event_t * e)
 
 
 static void home_btn_event_handler(lv_event_t* e) {
-
+	if(toSave){
+		saveSettings();
+	}
     frmMain_init();
 }
 
@@ -151,7 +154,7 @@ static void     updateFrmConfig(void) {
 static void timer_cb(lv_timer_t* timer)
 {
 
-    updateFrmConfig();
+	updateFrmConfig();
     LV_LOG_USER("Timer was called ");
 }
 
@@ -162,6 +165,7 @@ static void timer_cb(lv_timer_t* timer)
 void counter_conf_init(counter_id_t cId) {
 //void init_counter_conf(void) {
     counterId = cId;
+    toSave=false;
     char buf[TEXT_BUF_SIZE_LOCAL+1];
     lv_obj_t*  win =get_main_win();
     lv_obj_del(win);

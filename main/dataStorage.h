@@ -34,3 +34,4 @@ typedef struct _COUNTER{
 void loadSettings(void);
 counter_t* get_counter(counter_id_t regId);
 int32_t* get_current_count(counter_id_t regNdx);
+void saveSettings(void);
