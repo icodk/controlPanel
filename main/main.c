@@ -55,7 +55,7 @@
 //#endif
 
 extern void processMain(void);
-extern void frmMain_init(void);
+extern void frmProcess_init(void);
 
 
 
@@ -180,7 +180,7 @@ static void guiTask(void *pvParameter) {
     ui_common_init();
     load_language();
     loadSettings();
-    frmMain_init();
+    frmProcess_init();
 
     while (1) {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */

@@ -75,7 +75,7 @@ static void cfg_btn_menu_event_handler(lv_event_t * e)
 }
 
 
-static void drawFrmMain(lv_obj_t* win) {
+static void drawFrmProcess(lv_obj_t* win) {
     
      //win = lv_win_create(lv_scr_act(), 30);
     // window content
@@ -123,7 +123,7 @@ static void drawFrmMain(lv_obj_t* win) {
     
 }
 
-static void     updateFrmMain(void) {
+static void     updateFrmProcess(void) {
 
     for (int i = 0; i < COUNTER_COUNT; i++) {
         counter_t* cnt= get_counter(i);
@@ -138,19 +138,19 @@ static void     updateFrmMain(void) {
 static void timer_cb(lv_timer_t* timer)
 {
     
-    updateFrmMain();
+    updateFrmProcess();
     LV_LOG_USER("Timer was called ");
 }
 
 
 
 
-void frmMain_init() {
+void frmProcess_init() {
 
     lv_obj_t* win = get_main_win();
     lv_obj_del(win);
     win = lv_win_create(lv_scr_act(), 30);
-    drawFrmMain(win);
+    drawFrmProcess(win);
     lv_timer_t** tmr = get_updateTimer();
     *tmr=lv_timer_create(timer_cb, 100, NULL);
    

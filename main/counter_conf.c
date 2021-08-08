@@ -8,7 +8,7 @@
 #include "text_table.h"
 
 extern const char*  NUMERIC_RANGE;
-extern void  frmMain_init(void);
+extern void  frmProcess_init(void);
 static counter_id_t counterId;
 static lv_obj_t* kb;
 static lv_obj_t* counterPanel;
@@ -103,7 +103,7 @@ static void home_btn_event_handler(lv_event_t* e) {
 	if(toSave){
 		saveSettings();
 	}
-    frmMain_init();
+    frmProcess_init();
 }
 
 //-------------------------------------------------------
