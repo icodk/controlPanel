@@ -103,7 +103,9 @@ static void home_btn_event_handler(lv_event_t* e) {
 	if(toSave){
 		saveSettings();
 	}
-    frmProcess_init();
+	lv_timer_t** tmr = get_updateTimer();
+	lv_timer_set_repeat_count(*tmr, 0);
+	frmProcess_init();
 }
 
 //-------------------------------------------------------
