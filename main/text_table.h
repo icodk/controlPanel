@@ -34,6 +34,7 @@ extern "C" {
         , T_CONFIG
         , T_PARAM
         , T_PROCESS
+		, T_MENU
 
 
 	} text_ndx_t;

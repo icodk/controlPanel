@@ -46,6 +46,7 @@ static const  char *  danish[] = {
     ,"Config."
     ,"Param"
     ,"Process"
+	,"Menu"
 };
 //========== ENGLISH============
 static const  char *  english[] = {
@@ -58,6 +59,7 @@ static const  char *  english[] = {
     ,"Config."
     ,"Param"
     ,"Process"
+	,"Menu"
 };
 
 
