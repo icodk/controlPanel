@@ -1,5 +1,4 @@
-﻿
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lvgl/lvgl.h"
@@ -9,6 +8,8 @@
 
 extern const char*  NUMERIC_RANGE;
 extern void  frmProcess_init(void);
+
+
 static counter_id_t counterId;
 static lv_obj_t* kb;
 static lv_obj_t* counterPanel;
@@ -17,31 +18,26 @@ static bool toSave;
 //----------------------------------------------
 //static void saveValue(lv_obj_t* ta) {
 //
-//
+//    
 //}
 //
 
 //----------------------------------------------
 // 
 //
-//static void kb_event_cb(lv_obj_t* _kb, lv_event_t e)
+//static void kb_event_cb( lv_event_t *e)
 //{
-//    lv_keyboard_def_event_cb(kb, e);
+//    LV_LOG_USER("KeyBoard event %d",e->code);
 //
-//    if (e.code == LV_EVENT_CANCEL) {
-//        if (kb) {
-//            lv_obj_t* win = get_main_win();
-//            lv_obj_set_height(win, LV_VER_RES);
-//            lv_obj_del(kb);
-//            kb = NULL;
-//        }
-//    }
+//    
+//    
 //}
 
 //----------------------------------------------
 static void ta_event_cb(lv_event_t * e)
 {
     char buf[TEXT_BUF_SIZE_LOCAL + 1];
+    LV_LOG_USER("Event code: %d ", e->code);
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t* ta = lv_event_get_target(e);
     int32_t * field = lv_event_get_user_data(e);
@@ -65,16 +61,16 @@ static void ta_event_cb(lv_event_t * e)
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_state(ta, LV_STATE_FOCUSED);
         //---- save the values to the fields
-
         const char* txt = lv_textarea_get_text(ta);
-        if(*field !=(int32_t)atoi(txt)){
-        	*field = (int32_t)atoi(txt);
-        	toSave=true;
+#ifdef  _MSC_VER
+        
+        *field = (int32_t)atoi(txt);
+#else
+        if (*field != (int32_t)atoi(txt)) {
+            *field = (int32_t)atoi(txt);
+            toSave = true;
         }
-
-       
-
-
+#endif
 
     }
     else if (code ==  LV_EVENT_CANCEL  ) {
@@ -100,12 +96,17 @@ static void ta_event_cb(lv_event_t * e)
 
 
 static void home_btn_event_handler(lv_event_t* e) {
-	if(toSave){
-		saveSettings();
-	}
-	lv_timer_t** tmr = get_updateTimer();
-	lv_timer_set_repeat_count(*tmr, 0);
-	frmProcess_init();
+#ifdef  __GNUC_
+    if (toSave) {
+        saveSettings();
+}
+#else // _MSC_VER
+   
+#endif
+
+    lv_timer_t** tmr = get_updateTimer();
+    lv_timer_set_repeat_count(*tmr, 0);
+    frmProcess_init();
 }
 
 //-------------------------------------------------------
@@ -151,7 +152,9 @@ static void resetMsgBox(lv_event_t* e)
 static void     updateFrmConfig(void) {
     counter_t* cnt = get_counter(counterId);
     int32_t* cVal = get_current_count(counterId);
-    //(*cVal)++;
+    #ifdef  _MSC_VER
+    (*cVal)++;
+    #endif
     lv_label_set_text_fmt(cnt->displayField, "%d", *cVal);
 
 }
@@ -160,7 +163,7 @@ static void     updateFrmConfig(void) {
 static void timer_cb(lv_timer_t* timer)
 {
 
-	updateFrmConfig();
+    updateFrmConfig();
     LV_LOG_USER("Timer was called ");
 }
 
@@ -171,7 +174,6 @@ static void timer_cb(lv_timer_t* timer)
 void counter_conf_init(counter_id_t cId) {
 //void init_counter_conf(void) {
     counterId = cId;
-    toSave=false;
     char buf[TEXT_BUF_SIZE_LOCAL+1];
     lv_obj_t*  win =get_main_win();
     lv_obj_del(win);
@@ -184,12 +186,13 @@ void counter_conf_init(counter_id_t cId) {
     lv_obj_add_event_cb(btn, home_btn_event_handler, LV_EVENT_CLICKED, NULL);
     counter_t* counter = get_counter(counterId);
 
+
     /*Create a keyboard*/
     kb = lv_keyboard_create(lv_scr_act());
     lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_NUMBER);
     lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 
-
+    
 
 
     // Counter state:
