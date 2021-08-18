@@ -8,14 +8,13 @@
 #include "dataStorage.h"
 
 
-
-counter_t counter[COUNTER_COUNT];
-int32_t current_count[COUNTER_COUNT];
+static counter_t counterSettings[COUNTER_COUNT];
+static int32_t current_count[COUNTER_COUNT];
 
 #ifdef __GNUC__                            
 static const char * STORAGE_NAMESPACE= "storage";
 static const char * STORAGE_KEAY= "settings";
-counter_t counterSettings[COUNTER_COUNT];
+
 #endif
 
 static int32_t  ctl_param_table[] = {
@@ -26,9 +25,9 @@ static int32_t  ctl_param_table[] = {
 
 //---------------------------------
 
-#ifdef __GNUC__ 
-void loadSettings(void) {
 
+void loadSettings(void) {
+#ifdef __GNUC__ 
      nvs_handle_t my_handle;
 	 esp_err_t err = nvs_flash_init();
 	    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -55,12 +54,15 @@ void loadSettings(void) {
 			return ;
 		}
 		nvs_close(my_handle);
+#else
+    printf("\nSettings Loaded....");
+#endif     
 
 }   
 //----------------------------------                  
  void saveSettings(void) {
 
-                         
+#ifdef __GNUC__                      
 
 		nvs_handle_t my_handle;
 		 esp_err_t err;
@@ -82,25 +84,18 @@ void loadSettings(void) {
 
 			printf("\nData saved...to %s",STORAGE_KEAY);
 			nvs_close(my_handle);
-
-
-
-
-}
 #else
-void loadSettings(void) {
+     printf("\nSettings Saved....");
+
+#endif      
+
 
 }
-
-
- #endif                                                               
-
-
 
 //----------------------------------
 counter_t* get_counter(counter_id_t cntId) {
 
-    return &counter[cntId];
+    return &counterSettings[cntId];
 }
 //----------------------------------
 int32_t* get_current_count(counter_id_t cntId) {

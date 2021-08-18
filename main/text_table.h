@@ -34,7 +34,15 @@ extern "C" {
         , T_CONFIG
         , T_PARAM
         , T_PROCESS
-		, T_MENU
+        , T_MENU
+        , T_MAIN_MENU
+        , T_DECIMAL_NUM
+        , T_STRING_PARAM
+        , T_INT_PARAM
+        , T_SUB_MENU
+        , T_NETWORK
+        , T_SYSTEM
+        , T_INFO
 
 
 	} text_ndx_t;

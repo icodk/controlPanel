@@ -62,15 +62,15 @@ static void ta_event_cb(lv_event_t * e)
         lv_obj_clear_state(ta, LV_STATE_FOCUSED);
         //---- save the values to the fields
         const char* txt = lv_textarea_get_text(ta);
-#ifdef  _MSC_VER
+
         
-        *field = (int32_t)atoi(txt);
-#else
+        //*field = (int32_t)atoi(txt);
+
         if (*field != (int32_t)atoi(txt)) {
             *field = (int32_t)atoi(txt);
             toSave = true;
         }
-#endif
+
 
     }
     else if (code ==  LV_EVENT_CANCEL  ) {
@@ -96,14 +96,11 @@ static void ta_event_cb(lv_event_t * e)
 
 
 static void home_btn_event_handler(lv_event_t* e) {
-#ifdef  __GNUC_
+
     if (toSave) {
         saveSettings();
-}
-#else // _MSC_VER
-   
-#endif
-
+    }
+    toSave = false;
     lv_timer_t** tmr = get_updateTimer();
     lv_timer_set_repeat_count(*tmr, 0);
     frmProcess_init();

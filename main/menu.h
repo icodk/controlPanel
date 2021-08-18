@@ -1,21 +1,11 @@
-/*
- * menu.h
- *
- *  Created on: 11. aug. 2021
- *      Author: ico
- */
-
-#ifndef MAIN_MENU_H_
-#define MAIN_MENU_H_
-
+﻿#pragma once
 
 #include <limits.h>
 #include "text_table.h"
 
-
 typedef enum {
-    MENU_ITEM_TYPE_MAIN_MENU_HEADER
-    , MENU_ITEM_TYPE_MENU_HEADER
+    //MENU_ITEM_TYPE_MAIN_MENU_HEADER
+     MENU_ITEM_TYPE_MENU_HEADER
     , MENU_ITEM_TYPE_END_OF_MENU
     , MENU_ITEM_TYPE_SUB_MENU
     , MENU_ITEM_TYPE_EXIT
@@ -83,8 +73,4 @@ typedef  struct _MENU_ITEM
 
 
 void frmMenu_init(void);
-
-
-
-
-#endif /* MAIN_MENU_H_ */
+const menuItem_t* get_main_menu(void);
