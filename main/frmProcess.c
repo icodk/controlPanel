@@ -70,7 +70,7 @@ static void resetMsgBox(lv_event_t* e)
 //
 static void menu_btn_event_handler(lv_event_t * e)
 {
-    lv_obj_t * obj = lv_event_get_target(e);
+   // lv_obj_t * obj = lv_event_get_target(e);
     LV_LOG_USER("Event code %d", e->code);
 
     lv_timer_t** tmr = get_updateTimer();
@@ -104,7 +104,7 @@ static void drawFrmProcess(lv_obj_t* win) {
         lv_obj_align(panel, LV_ALIGN_TOP_LEFT,5, i*50 + 5);
         lv_obj_add_style(panel, get_style_panel(), 0);
         //lv_obj_add_event_cb(panel, resetMsgBox, LV_EVENT_CLICKED, i);
-        lv_obj_add_event_cb(panel, config_init, LV_EVENT_CLICKED, i);
+        lv_obj_add_event_cb(panel, config_init, LV_EVENT_CLICKED,(void *)i);
 
         // LABEL
         lv_obj_t* label = lv_label_create(panel);
