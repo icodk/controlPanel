@@ -8,3 +8,7 @@ idf_component_register(SRCS main.c
 							menu.c
 							menuStruct.c
 							)
+
+##execute_process(COMMAND cmd /C git describe --abbrev=7 --dirty --always --tags > gitversion1.c )
+idf_build_set_property(COMPILE_DEFINITIONS "-DSTR_GIT_VERSION=\"${PROJECT_VER}\"" APPEND)
+
