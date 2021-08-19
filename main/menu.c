@@ -15,6 +15,7 @@ Date: 2021-08-08
 //----------------------------------------
 //----------------------------------------
  extern void  frmProcess_init(void);
+ extern void frmInfo_init(void);
 
 
 
@@ -46,7 +47,7 @@ static void back_btn_event_handler(lv_event_t* e)
 
 static void home_btn_event_handler(lv_event_t* e)
 {
-  //  lv_obj_t* obj = lv_event_get_target(e);
+   // lv_obj_t* obj = lv_event_get_target(e);
     LV_LOG_USER("Event code %d", e->code);
     frmProcess_init();
     //resetMsgBox();
@@ -55,7 +56,7 @@ static void home_btn_event_handler(lv_event_t* e)
 //----------------------------------------
 static void scroll_up_btn_event_handler(lv_event_t* e)
 {
-  //  lv_obj_t* obj = lv_event_get_target(e);
+   // lv_obj_t* obj = lv_event_get_target(e);
     LV_LOG_USER("Event code %d", e->code);
     //resetMsgBox();
     /*if (!may_scroll_up) {
@@ -63,7 +64,7 @@ static void scroll_up_btn_event_handler(lv_event_t* e)
     }*/
     may_scroll_up = false;
    //  lv_obj_t* win = get_main_win();
- //    lv_obj_t* wcont = lv_win_get_content(win);
+   //  lv_obj_t* wcont = lv_win_get_content(win);
     //lv_list_up(menuList);
     lv_obj_scroll_by(menuList,0, 200, LV_ANIM_ON);
     //lv_obj_scroll_to_view(wcont, LV_ANIM_ON);
@@ -73,8 +74,8 @@ static void scroll_down_btn_event_handler(lv_event_t* e)
 {
    // lv_obj_t* obj = lv_event_get_target(e);
     LV_LOG_USER("Event code %d", e->code);
-//    lv_obj_t* win = get_main_win();
-   // lv_obj_t* wcont = lv_win_get_content(win);
+  //  lv_obj_t* win = get_main_win();
+  //  lv_obj_t* wcont = lv_win_get_content(win);
     lv_obj_scroll_by(menuList, 0,  -200, LV_ANIM_ON);
     //lv_obj_scroll_to_view(wcont, LV_ANIM_ON);
     //lv_list_down(menuList);
@@ -109,7 +110,7 @@ static void scroll_down_btn_event_handler(lv_event_t* e)
 //    //if (e->code != 27) {
 //        LV_LOG_USER("Event code %d", e->code);
 //    //}
-//
+//    
 //    /*If the cells are drawn...*/
 //    if (dsc->part == LV_PART_ITEMS) {
 //
@@ -143,18 +144,13 @@ static void scroll_down_btn_event_handler(lv_event_t* e)
 //    }
 //}
 //----------------------------------------
-static void displayInfo(void) {
-
-
-}
-//----------------------------------------
 
 static void change_event_cb(lv_event_t* e)
 {
     lv_obj_t* obj = lv_event_get_target(e);
     uint16_t col;
     uint16_t row;
- //   void (*fncPtr)(void);
+  //  void (*fncPtr)(void);
     lv_table_get_selected_cell(obj, &row, &col);
     switch (currentMenu[row + 1].menuItemType ) {
     case  MENU_ITEM_TYPE_SUB_MENU:
@@ -165,8 +161,10 @@ static void change_event_cb(lv_event_t* e)
     case  MENU_ITEM_TYPE_INFO_VERSION:
        /* fncPtr = (void (*)(void))currentMenu[row + 1].menuItemPntr;
         (*fncPtr)();*/
-        displayInfo();
+        frmInfo_init();
         break;
+
+
     default:
         break;
     }
