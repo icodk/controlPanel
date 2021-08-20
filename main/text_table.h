@@ -43,6 +43,8 @@ extern "C" {
         , T_NETWORK
         , T_SYSTEM
         , T_INFO
+        , T_WIFI
+        , T_ETHERNET
 
 
 	} text_ndx_t;

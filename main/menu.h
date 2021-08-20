@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include <limits.h>
 #include "text_table.h"
+
 
 typedef enum {
     //MENU_ITEM_TYPE_MAIN_MENU_HEADER
@@ -10,7 +10,7 @@ typedef enum {
     , MENU_ITEM_TYPE_SUB_MENU
     , MENU_ITEM_TYPE_EXIT
     , MENU_ITEM_TYPE_COMMAND
-
+    , MENU_ITEM_TYPE_FUNCTION
     , MENU_ITEM_TYPE_YES_NO_DLG				// YES_NO_DLG
     , MENU_ITEM_TYPE_SYS_YES_NO_DLG
 
@@ -54,6 +54,7 @@ typedef  struct _MENU_ITEM
     const menuItemType_t menuItemType;
     const text_ndx_t menuItemText;
     const void* menuItemPntr;
+    const void* visableFncPtr;           // pointer to a function that returns bool true if item should be shown
     const uint16_t eeNdx;				//EE location
     const access_level_t accesslevel;
     const int32_t minVal;
@@ -70,6 +71,10 @@ typedef  struct _MENU_ITEM
 #define	EE_NDX_NONE	(uint8_t)0
 #define	NO_MIN		INT_MIN
 #define	NO_MAX		INT_MAX
+
+#define	SHOW_ITEM   NULL
+
+
 
 
 void frmMenu_init(void);

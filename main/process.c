@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_freertos_hooks.h"
@@ -34,6 +34,20 @@
 
 
 void processMain(void){
+	time_t now;
+	char strftime_buf[64];
+	struct tm timeinfo;
+
+	time(&now);
+	// Set timezone to China Standard Time
+	setenv("TZ", "CST-8", 1);
+	tzset();
+
+	localtime_r(&now, &timeinfo);
+	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+	printf("\n%s", strftime_buf);
+
+
 	for (int i = 0; i < COUNTER_COUNT; i++) {
 	        //counter_t* cnt= get_counter(i);
 	        int32_t* cVal = get_current_count(i);

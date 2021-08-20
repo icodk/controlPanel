@@ -150,11 +150,26 @@ static void change_event_cb(lv_event_t* e)
     lv_obj_t* obj = lv_event_get_target(e);
     uint16_t col;
     uint16_t row;
-  //  void (*fncPtr)(void);
+    bool (*visiFncPtr)(void);
+    void (*fncPtr)(void);
     lv_table_get_selected_cell(obj, &row, &col);
-    switch (currentMenu[row + 1].menuItemType ) {
+    int i = 0;
+    // search for the menu item user has selected by finding all the visible menus
+    menuItem_t *selectedItem = currentMenu;// point to the first item
+    while (selectedItem->menuItemType != MENU_ITEM_TYPE_END_OF_MENU) {
+        visiFncPtr = (bool (*)(void))selectedItem->visableFncPtr;
+        if ((visiFncPtr == SHOW_ITEM) || (*visiFncPtr)()) {
+            if (selectedItem->menuItemType != MENU_ITEM_TYPE_MENU_HEADER) {
+                if (i >= row) { break; }
+                i++;
+                
+            }
+        }
+        selectedItem++; // addvance to the next menu item
+    }
+    switch (selectedItem->menuItemType ) {
     case  MENU_ITEM_TYPE_SUB_MENU:
-            currentMenu = currentMenu[row + 1].menuItemPntr;
+            currentMenu = selectedItem->menuItemPntr;
             lv_obj_t* win = get_main_win();
             menuDraw(win);
         break;
@@ -163,8 +178,10 @@ static void change_event_cb(lv_event_t* e)
         (*fncPtr)();*/
         frmInfo_init();
         break;
-
-
+    case  MENU_ITEM_TYPE_FUNCTION:
+         fncPtr = (void (*)(void))selectedItem->menuItemPntr;
+        (*fncPtr)();
+        break;
     default:
         break;
     }
@@ -183,7 +200,7 @@ static void menuDraw(lv_obj_t* win) {
     /*Measure memory usage*/
    /* lv_mem_monitor_t mon1;
     lv_mem_monitor(&mon1);*/
-
+    bool (*visiFncPtr)(void);
   //  uint32_t t = lv_tick_get();
     lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
     lv_obj_clean(wcont);
@@ -212,8 +229,9 @@ static void menuDraw(lv_obj_t* win) {
 
     /*Don't make the cell pressed, we will draw something different in the event*/
    // lv_obj_remove_style(menuList, NULL, LV_PART_ITEMS | LV_STATE_PRESSED);
-    const menuItem_t* menuToDraw = currentMenu;
-    int row = 0;
+    const menuItem_t* menuToDraw = currentMenu; // start just after the header
+    int rowNo = 0;
+    //int itemNo = 1;
     while (menuToDraw->menuItemType != MENU_ITEM_TYPE_END_OF_MENU) {
       if (menuToDraw->menuItemType == MENU_ITEM_TYPE_MENU_HEADER) {
             //lv_obj_t* header = lv_win_get_header(win);
@@ -221,11 +239,16 @@ static void menuDraw(lv_obj_t* win) {
             //lv_win_add_title(win, get_text(currentMenu->menuItemText));
         lv_label_set_text(win_title, get_text(menuToDraw->menuItemText));
         }else {
-          lv_table_set_cell_value_fmt(menuList, row, 0,"%2d. %s",row+1, get_text(menuToDraw->menuItemText));
-          row++;
+          visiFncPtr = (bool (*)(void))menuToDraw->visableFncPtr;
+          if ((visiFncPtr == SHOW_ITEM) || (*visiFncPtr)()) {
+              lv_table_set_cell_value_fmt(menuList, rowNo, 0, "%2d. %s", rowNo+1, get_text(menuToDraw->menuItemText));
+              rowNo++;
+          }
+          
+          
         }
         
-      menuToDraw++;
+      menuToDraw++; // next menu item
     }
 
   /*  uint32_t i;

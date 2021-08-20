@@ -56,6 +56,8 @@ static const  char *  danish[] = {
     ,"Network"
     ,"System"
     ,"Info"
+    ,"Wifi"
+    ,"Ethernet"
     
 
 };
@@ -79,6 +81,8 @@ static const  char *  english[] = {
     ,"Network"
     ,"System"
     ,"Info"
+    ,"Wifi"
+    ,"Ethernet"
 
 };
 
