@@ -40,7 +40,7 @@ void processMain(void){
 
 	time(&now);
 	// Set timezone to China Standard Time
-	setenv("TZ", "CST-8", 1);
+	setenv("TZ", "UTC+2", 1);
 	tzset();
 
 	localtime_r(&now, &timeinfo);
