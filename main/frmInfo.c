@@ -43,10 +43,12 @@ void frmInfo_init(void) {
     lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
     lv_obj_t* info_label = lv_label_create(wcont);
     lv_obj_align(info_label, LV_ALIGN_TOP_LEFT, 0, 0);
-
+#ifdef __GNUC__ 
     lv_label_set_text_fmt(info_label, "App: %s\nIDF: %s\nlvgl:%d.%d.%d",STR_GIT_VERSION,IDF_VER,lv_version_major(),lv_version_minor(),lv_version_patch());
     //lv_label_set_text_fmt(info_label, "Version: %s\nIDF: %s",STR_GIT_VERSION,IDF_VER);
-
+#else
+    lv_label_set_text_fmt(info_label, "Version information");
+#endif
 
 
 }

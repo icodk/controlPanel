@@ -8,6 +8,9 @@ idf_component_register(SRCS main.c
 							text_table.c
 							menu.c
 							menuStruct.c
+							ethernet_cfg.c
+							wifi_cfg.c
+							
 							)
 
 ##execute_process(COMMAND cmd /C git describe --abbrev=7 --dirty --always --tags > gitversion1.c )

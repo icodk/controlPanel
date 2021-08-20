@@ -187,6 +187,9 @@ void counter_conf_init(counter_id_t cId) {
     /*Create a keyboard*/
     kb = lv_keyboard_create(lv_scr_act());
     lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_NUMBER);
+    //lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_LOWER);
+    //lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_SPECIAL);
+    
     lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 
     
