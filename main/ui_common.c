@@ -14,8 +14,8 @@ static lv_style_t style_label;
 static const lv_font_t* font_large;
 static const lv_font_t* font_normal;
 static lv_obj_t* win = NULL;
+static lv_obj_t* win_title = NULL;
 static lv_timer_t* updateTimer = NULL;
-
 
 
 static void init_common_styles(void) {
@@ -65,7 +65,7 @@ static void init_common_styles(void) {
 
     //lv_style_set_text_color(&style_data, lv_palette_main(LV_PALETTE_GREEN));
     //lv_style_set_text_color(&style_data, lv_palette_lighten(LV_PALETTE_GREEN, 2));
-    lv_style_set_text_color(&style_data, lv_palette_lighten(LV_PALETTE_YELLOW,2));
+    lv_style_set_text_color(&style_data, lv_palette_lighten(LV_PALETTE_YELLOW, 2));
     // lv_style_set_bg_color(&style_data, lv_color_black());
      //lv_style_set_bg_color(&style_data, lv_palette_main(LV_PALETTE_RED));
     lv_style_set_bg_color(&style_data, lv_color_black());
@@ -82,10 +82,17 @@ static void init_common_styles(void) {
     font_normal = LV_FONT_DEFAULT;
 }
 //----------------------------------------------
+lv_obj_t** get_main_win_title(void) {
+
+    return &win_title;
+}
+
+//----------------------------------------------
 lv_obj_t* get_main_win(void) {
 
     return win;
 }
+
 //----------------------------------------------
 void ui_common_init(void) {
     win= lv_win_create(lv_scr_act(), 30);
