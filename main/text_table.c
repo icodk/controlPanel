@@ -10,6 +10,7 @@
 *      INCLUDES
 *********************/
 #include <stdint.h>
+
 #include "text_table.h"
 
 
@@ -48,7 +49,6 @@ static const  char *  danish[] = {
     ,"Process"
     ,"Menu"
     ,"Main Menu"
-
     ,"Decimal no."
     ,"String Param"
     ,"int param"
@@ -58,6 +58,8 @@ static const  char *  danish[] = {
     ,"Info"
     ,"Wifi"
     ,"Ethernet"
+    ,"Wifi AP"
+    ,"Wifi ST"
     
 
 };
@@ -83,6 +85,8 @@ static const  char *  english[] = {
     ,"Info"
     ,"Wifi"
     ,"Ethernet"
+    ,"Wifi AP"
+    ,"Wifi ST"
 
 };
 

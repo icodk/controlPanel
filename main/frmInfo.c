@@ -33,7 +33,7 @@ static void home_btn_event_handler(lv_event_t* e) {
 /*-------------------------------------------------*/
 void frmInfo_init(void) {
 
-    char buf[TEXT_BUF_SIZE_LOCAL];
+    //char buf[TEXT_BUF_SIZE_LOCAL];
     lv_obj_t* win = get_main_win();
     lv_obj_del(win);
     win = lv_win_create(lv_scr_act(), 30);

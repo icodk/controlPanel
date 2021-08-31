@@ -12,6 +12,7 @@
 #include "menu.h"
 //#include "frmProcess.h"
 #include "text_table.h"
+#include "network.h"
 /* MACROS    -------------------------------------------------------------------*/
 
 /* CONSTANTS -------------------------------------------------------------------*/
@@ -23,10 +24,6 @@
 /* EXTERNAL VARIABLES ----------------------------------------------------------*/
 
 /* EXTERNAL FUNCTIONS -----------------------------------------------------------*/
-extern void ethernet_cfg_init(void);
-extern bool isEthernetSupported(void);
-extern void wifi_cfg_init(void);
-extern bool isWifisupported(void);
 
 
 /* LOCAL PROTOTYPES--------------------------------------------------------------*/
@@ -45,9 +42,9 @@ static  const menuItem_t systemMenu[];
 //static const menuItem_t menuInstallation[];
 //static const menuItem_t menuDustAuto[];
 //static const menuItem_t menuDrainAuto[];
-static bool hidenItem(void) {
-    return false;
-}
+//static bool hidenItem(void) {
+//    return false;
+//}
 //------ MAIN MENU
 static const menuItem_t mainMenu[] = {
     {MENU_ITEM_TYPE_MENU_HEADER,	T_MAIN_MENU,            NULL, SHOW_ITEM,   EE_NDX_NONE,ACCESS_LEVEL_0,NO_MIN,NO_MAX},
@@ -77,7 +74,8 @@ static const menuItem_t systemMenu[] = {
 static const menuItem_t networkMenu[] = {
 
 {MENU_ITEM_TYPE_MENU_HEADER, T_NETWORK,         systemMenu, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0, NO_MIN, NO_MAX},
-        {MENU_ITEM_TYPE_FUNCTION, T_WIFI,       wifi_cfg_init, isWifisupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
+        {MENU_ITEM_TYPE_FUNCTION, T_WIFI_AP,       wifi_AP_cfg_init, isWifisupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
+         {MENU_ITEM_TYPE_FUNCTION, T_WIFI_ST,      wifi_ST_cfg_init, isWifisupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
         {MENU_ITEM_TYPE_FUNCTION, T_ETHERNET,   ethernet_cfg_init, isEthernetSupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
 
 
