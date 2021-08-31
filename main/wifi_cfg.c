@@ -15,10 +15,10 @@
 #include "text_table.h"
 
 bool isWifisupported(void) {
-    return false;
+    return true;
 }
 
 void wifi_cfg_init(void) {
 
-
+printf("Wifi_cfg_init()\n");
 }

@@ -33,20 +33,20 @@
 
 
 
-void processMain(void){
-	time_t now;
-	char strftime_buf[64];
-	struct tm timeinfo;
-
-	time(&now);
-	// Set timezone to China Standard Time
-	setenv("TZ", "UTC+2", 1);
-	tzset();
-
-	localtime_r(&now, &timeinfo);
-	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-	printf("\n%s", strftime_buf);
-
+void processMain(void){ // called by guiTask() repeatedly
+//	time_t now;
+//	char strftime_buf[64];
+//	struct tm timeinfo;
+//
+//	time(&now);
+//	// Set timezone to China Standard Time
+//	setenv("TZ", "UTC+2", 1);
+//	tzset();
+//
+//	localtime_r(&now, &timeinfo);
+//	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+//	//printf("\n%s", strftime_buf);
+//
 
 	for (int i = 0; i < COUNTER_COUNT; i++) {
 	        //counter_t* cnt= get_counter(i);
