@@ -200,7 +200,7 @@ static void change_event_cb(lv_event_t* e)
     lv_table_get_selected_cell(obj, &row, &col);
     int i = 0;
     // search for the menu item user has selected by finding all the visible menus
-    menuItem_t *selectedItem = currentMenu;// point to the first item
+    const menuItem_t *selectedItem = currentMenu;// point to the first item
     while (selectedItem->menuItemType != MENU_ITEM_TYPE_END_OF_MENU) {
         visiFncPtr = (bool (*)(void))selectedItem->visableFncPtr;
         if ((visiFncPtr == SHOW_ITEM) || (*visiFncPtr)()) {
