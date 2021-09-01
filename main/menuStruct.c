@@ -58,7 +58,7 @@ static const menuItem_t mainMenu[] = {
 
 static const menuItem_t systemMenu[] = {
 {MENU_ITEM_TYPE_MENU_HEADER, T_SYSTEM, mainMenu, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0, NO_MIN, NO_MAX},
-    {MENU_ITEM_TYPE_SUB_MENU, T_NETWORK,       networkMenu, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
+    {MENU_ITEM_TYPE_NETWORK_FORM, T_NETWORK,       networkMenu, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
     { MENU_ITEM_TYPE_SYS_NUM_DEC1, T_STRING_PARAM, NULL, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX },
     { MENU_ITEM_TYPE_SYS_NUM_DEC1, T_DECIMAL_NUM, 				    NULL, SHOW_ITEM, 		EE_NDX_NONE,ACCESS_LEVEL_0,	NO_MIN,NO_MAX },
     { MENU_ITEM_TYPE_SYS_NUM_DEC1, T_INT_PARAM, NULL, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX },
@@ -74,8 +74,7 @@ static const menuItem_t systemMenu[] = {
 static const menuItem_t networkMenu[] = {
 
 {MENU_ITEM_TYPE_MENU_HEADER, T_NETWORK,         systemMenu, SHOW_ITEM,  EE_NDX_NONE, ACCESS_LEVEL_0, NO_MIN, NO_MAX},
-        {MENU_ITEM_TYPE_FUNCTION, T_WIFI_AP,       wifi_AP_cfg_init, isWifisupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
-         {MENU_ITEM_TYPE_FUNCTION, T_WIFI_ST,      wifi_ST_cfg_init, isWifisupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
+        {MENU_ITEM_TYPE_FUNCTION, T_WIFI,       wifi_AP_cfg_init, isWifisupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
         {MENU_ITEM_TYPE_FUNCTION, T_ETHERNET,   ethernet_cfg_init, isEthernetSupported,  EE_NDX_NONE, ACCESS_LEVEL_0,NO_MIN,NO_MAX},
 
 

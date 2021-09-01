@@ -16,6 +16,7 @@ Date: 2021-08-08
 //----------------------------------------
  extern void  frmProcess_init(void);
  extern void frmInfo_init(void);
+ extern void frmNetwork_init(void);
 
 
 
@@ -227,6 +228,9 @@ static void change_event_cb(lv_event_t* e)
     case  MENU_ITEM_TYPE_FUNCTION:
          fncPtr = (void (*)(void))selectedItem->menuItemPntr;
         (*fncPtr)();
+        break;
+    case   MENU_ITEM_TYPE_NETWORK_FORM:
+        frmNetwork_init();
         break;
     default:
         break;
