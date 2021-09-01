@@ -13,17 +13,16 @@ static int32_t current_count[COUNTER_COUNT];
 
 
 
-#ifdef __GNUC__                            
+                      
 
-static network_settings_t network_settings={.wifi_settings={.sta_enable=false,
-															.ap_enable=false,
-															.remote_ap_name[0]=0,
-															.local_ap_name[0]=0,
-															.sta_static_ip=false
-															}
-
+static network_settings_t network_settings={.sta_enable=false,
+											.ap_enable=false,
+                                            .eth_enable = false,
+											.remote_ap_name[0]=0,
+											.local_ap_name[0]=0,
+											.sta_static_ip=false
 											};
-
+#ifdef __GNUC__      
 static const char * STORAGE_NAMESPACE= "storage";
 static const char * STORAGE_KEY_COUNTERS= "counters";
 static const char * STORAGE_KEY_NETWORK= "network";
@@ -157,8 +156,8 @@ int32_t* get_current_count(counter_id_t cntId) {
     return &current_count[cntId];
 }
 //----------------------------------
-wifi_settings_t* get_wifi_settings(void){
-	return &network_settings.wifi_settings;
+network_settings_t* get_network_settings(void){
+	return &network_settings;
 }
 //----------------------------------
 //----------------------------------

@@ -86,7 +86,7 @@ void app_main() {
      * Otherwise there can be problem such as memory corruption and so on.
      * NOTE: When not using Wi-Fi nor Bluetooth you can pin the guiTask to core 0 */
     xTaskCreatePinnedToCore(guiTask, "gui", 4096*2, NULL, 0, NULL, 1); // 0 is working. 1 is crushing if FreeRTOS is set to run only on the first core
-    printf("Starting Version: %s %s\n",STR_GIT_VERSION,IDF_VER);
+    printf("Starting Version: %s %s %s\n",STR_GIT_VERSION,IDF_VER,esp_get_idf_version());
 }
 
 /* Creates a semaphore to handle concurrent call to lvgl stuff
