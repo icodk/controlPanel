@@ -60,6 +60,9 @@ static const  char *  danish[] = {
     ,"Ethernet"
     ,"Wifi AP"
     ,"Wifi ST"
+    , "Enable STA"
+    , "Enable AP"
+    , "Enable Ethernet"
     
 
 };
@@ -112,7 +115,7 @@ const  char *  * lang_table;
 /**********************
 *   STATIC FUNCTIONS
 **********************/
-static uint8_t  get_lang(void)
+static uint16_t  get_lang(void)
 {
 	return 0;
 }
@@ -122,7 +125,7 @@ static uint8_t  get_lang(void)
 **********************/
 void load_language(void)
 {
-	uint8_t  cLang = get_lang();
+	uint16_t  cLang = get_lang();
 	//	BYTE buf[512];
 	if (cLang >LANGUAGE_COUNT)
 	{
