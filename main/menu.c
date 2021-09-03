@@ -13,6 +13,9 @@ Date: 2021-08-08
 #include "text_table.h"
 #include "menu.h"
 //----------------------------------------
+#define HEADER_HEIGHT   30
+#define HEADER_PADDING_HEIGHT   10
+#define HEADER_BTN_WIDTH   40
 //----------------------------------------
  extern void  frmProcess_init(void);
  extern void frmInfo_init(void);
@@ -26,10 +29,7 @@ static lv_obj_t* menuList;
 static lv_obj_t* win_title;
 //static int event_count[45];
 const menuItem_t* currentMenu;
-//static bool may_scroll_up;
-//static bool may_scroll_down;
-static uint16_t menuListLength;
-static int32_t winContHeight;
+
 //----------------------------------------
 // 
 static void back_btn_event_handler(lv_event_t* e)
@@ -60,18 +60,17 @@ static void scroll_up_btn_event_handler(lv_event_t* e)
 {
    // lv_obj_t* obj = lv_event_get_target(e);
     LV_LOG_USER("Event code %d", e->code);
-    //resetMsgBox();
-    /*if (!may_scroll_up) {
+    lv_obj_t* win = get_main_win();
+    lv_obj_t* wcont = lv_win_get_content(win);
+    uint32_t listHeight = menuList->coords.y2 - menuList->coords.y1;
+    uint32_t contHeight = wcont->coords.y2 - wcont->coords.y1;
+    if (listHeight <= contHeight) {
         return;
-    }*/
-    //may_scroll_up = false;
-     lv_obj_t* win = get_main_win();
-     lv_obj_t* wcont = lv_win_get_content(win);
-    //lv_list_up(menuList);
-    //lv_obj_scroll_by(menuList,0, 200, LV_ANIM_ON);
+    }
     
-    lv_obj_scroll_by(wcont, 0, 200, LV_ANIM_ON);
-    //lv_obj_scroll_to_view(wcont, LV_ANIM_ON);
+    int32_t scrollAmount = -menuList->coords.y1+HEADER_HEIGHT+HEADER_PADDING_HEIGHT;
+    scrollAmount = scrollAmount > contHeight / 2 ? contHeight / 2 : scrollAmount ;
+    lv_obj_scroll_by(wcont, 0, scrollAmount, LV_ANIM_ON);
 }
 //----------------------------------------
 static void scroll_down_btn_event_handler(lv_event_t* e)
@@ -80,31 +79,20 @@ static void scroll_down_btn_event_handler(lv_event_t* e)
     LV_LOG_USER("Event code %d", e->code);
     lv_obj_t* win = get_main_win();
     lv_obj_t* wcont = lv_win_get_content(win);
-    //lv_obj_scroll_by(menuList, 0,  -200, LV_ANIM_ON);
-    lv_obj_scroll_by(wcont, 0, -200, LV_ANIM_ON);
+    uint32_t listHeight = menuList->coords.y2 - menuList->coords.y1;
+    uint32_t contHeight = wcont->coords.y2 - wcont->coords.y1;
+    if (listHeight <=contHeight) {
+        return;
+    }
+    int32_t scrollAmount = listHeight - contHeight + menuList->coords.y1;
+    scrollAmount = scrollAmount > contHeight / 2 ? contHeight / 2 : scrollAmount;
+    
+    lv_obj_scroll_by(wcont, 0, -scrollAmount, LV_ANIM_ON);
     //lv_obj_scroll_to_view(wcont, LV_ANIM_ON);
-    //lv_list_down(menuList);
-    //resetMsgBox();
-
+    
+    
 }
 //----------------------------------------
-
-//
-//static void menuList_scroll_event_cb(lv_event_t* e) {
-//
-//    lv_obj_t* obj = lv_event_get_target(e);
-//    event_count[e->code]++;
-//    //if ((e->code == 9) || (e->code == 10) || (e->code == 11)) {
-//
-//        LV_LOG_USER("Event code %d", e->code);
-//    //}
-//   /* lv_event_t e_data;
-//    e_data.code = LV_EVENT_SCROLL;
-//    lv_event_send(&menuList, LV_EVENT_SCROLL, &e_data);*/
-//
-//}
-//
-
 
 #define ITEM_CNT 20
 //
@@ -149,47 +137,7 @@ static void scroll_down_btn_event_handler(lv_event_t* e)
 //    }
 //}
 //----------------------------------------
-static void win_size_event_cb(lv_event_t* e) {
-    lv_point_t* p = lv_event_get_param(e);
 
-
-    //if (winContHeight < p->y) {
-        winContHeight = p->y;
-        LV_LOG_USER("Win Cont. H:   %d", winContHeight);
-
-    //}
-    //If x or y < 0 then it doesn't neesd to be calculated now
-    //if (p->x >= 0) {
-    //    p->x = 200;	//Set or calculate the self width
-    //}
-
-    //if (p->y >= 0) {
-    //    p->y = 50;	//Set or calculate the self height
-    //}
-}
-
-
-
-
-//----------------------------------------
-static void menuList_size_event_cb(lv_event_t* e) {
-    lv_point_t* p = lv_event_get_param(e);
-    
-
-    if ( menuListLength<p->y ) {
-        menuListLength = p->y;
-        LV_LOG_USER("Menu list lenght %d", menuListLength);
-
-    }
-    //If x or y < 0 then it doesn't neesd to be calculated now
-    //if (p->x >= 0) {
-    //    p->x = 200;	//Set or calculate the self width
-    //}
-
-    //if (p->y >= 0) {
-    //    p->y = 50;	//Set or calculate the self height
-    //}
-}
 
 static void change_event_cb(lv_event_t* e)
 {
@@ -216,7 +164,7 @@ static void change_event_cb(lv_event_t* e)
     switch (selectedItem->menuItemType ) {
     case  MENU_ITEM_TYPE_SUB_MENU:
             currentMenu = selectedItem->menuItemPntr;
-            menuListLength = 0; // reset the list length
+           
             lv_obj_t* win = get_main_win();
             menuDraw(win);
         break;
@@ -281,7 +229,7 @@ static void menuDraw(lv_obj_t* win) {
    // lv_obj_remove_style(menuList, NULL, LV_PART_ITEMS | LV_STATE_PRESSED);
     const menuItem_t* menuToDraw = currentMenu; // start just after the header
     int rowNo = 0;
-    menuListLength = 0;
+   
     //int itemNo = 1;
     while (menuToDraw->menuItemType != MENU_ITEM_TYPE_END_OF_MENU) {
       if (menuToDraw->menuItemType == MENU_ITEM_TYPE_MENU_HEADER) {
@@ -316,7 +264,7 @@ static void menuDraw(lv_obj_t* win) {
     /*Add an event callback to to apply some custom drawing*/
  //   lv_obj_add_event_cb(menuList, draw_event_cb, LV_EVENT_DRAW_PART_END, NULL);
     lv_obj_add_event_cb(menuList, change_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-    lv_obj_add_event_cb(menuList, menuList_size_event_cb, LV_EVENT_GET_SELF_SIZE, NULL);
+    //lv_obj_add_event_cb(menuList, menuList_size_event_cb, LV_EVENT_GET_SELF_SIZE, NULL);
 
     //lv_obj_add_event_cb(menuList, change_event_cb, LV_EVENT_ALL, NULL);
 
@@ -344,28 +292,23 @@ void frmMenu_init(void) {
 
     lv_obj_t* win = get_main_win();
     lv_obj_del(win);
-    win = lv_win_create(lv_scr_act(), 30);
-   /*
-   drawFrmProcess(win);
-    lv_timer_t** tmr = get_updateTimer();
-    *tmr = lv_timer_create(timer_cb, 100, NULL);
-    */
-
+    win = lv_win_create(lv_scr_act(), HEADER_HEIGHT);
+   
     win_title=lv_win_add_title(win, get_text(T_MENU));
 
-    lv_obj_t*  btn = lv_win_add_btn(win, LV_SYMBOL_LEFT, 40);
+    lv_obj_t*  btn = lv_win_add_btn(win, LV_SYMBOL_LEFT, HEADER_BTN_WIDTH);
     lv_obj_add_event_cb(btn, back_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
-    btn = lv_win_add_btn(win, LV_SYMBOL_UP, 40);
+    btn = lv_win_add_btn(win, LV_SYMBOL_UP, HEADER_BTN_WIDTH);
     lv_obj_add_event_cb(btn, scroll_up_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
-    btn = lv_win_add_btn(win, LV_SYMBOL_DOWN, 40);
+    btn = lv_win_add_btn(win, LV_SYMBOL_DOWN, HEADER_BTN_WIDTH);
     lv_obj_add_event_cb(btn, scroll_down_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
-    btn = lv_win_add_btn(win, LV_SYMBOL_HOME, 40);
+    btn = lv_win_add_btn(win, LV_SYMBOL_HOME, HEADER_BTN_WIDTH);
     lv_obj_add_event_cb(btn, home_btn_event_handler, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_add_event_cb(win, win_size_event_cb, LV_EVENT_GET_SELF_SIZE, NULL);
+   
 
     currentMenu = get_main_menu();
     menuDraw(win);
