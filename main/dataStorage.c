@@ -1,5 +1,8 @@
 ﻿
 
+
+#include <stdio.h>
+#include <stdlib.h>
 #ifdef __GNUC__                            
 #include "nvs_flash.h"
 #include "nvs.h"
@@ -15,7 +18,7 @@ static int32_t current_count[COUNTER_COUNT];
 
                       
 
-static network_settings_t network_settings={.sta_enable=false,
+static network_settings_t network_settings={.sta_enable=true,
 											.ap_enable=false,
                                             .eth_enable = false,
 											.remote_ap_name[0]=0,
