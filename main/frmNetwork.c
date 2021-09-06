@@ -13,13 +13,17 @@
 #include "dataStorage.h"
 #include "ui_common.h"
 #include "text_table.h"
-/*-------------------------------------------------*/
+
 extern void  frmProcess_init(void);
 extern bool isEthernetSupported(void);
-
+static bool toSave;
+/*-------------------------------------------------*/
 static void home_btn_event_handler(lv_event_t* e) {
     (void)e; //ignore
-    
+    if(toSave){
+    	toSave=false;
+    	saveNetworkSetting();
+    }
     frmProcess_init();
 }
 //--------------------------------------------------
@@ -44,13 +48,14 @@ static void enable_event_handler(lv_event_t* e) {
         const char* state = lv_obj_get_state(obj) & LV_STATE_CHECKED ? "Checked" : "Unchecked";
         *enable_mode = lv_obj_get_state(obj) & LV_STATE_CHECKED ? true : false;
         LV_LOG_USER("%s: %s", txt, state);
+        toSave=true;
     }
 }
 //--------------------------------------------------
 static void fillSTATab(lv_obj_t* tab, network_settings_t* netSet) {
     lv_obj_t* dd;
     dd = lv_dropdown_create(tab);
-    lv_dropdown_set_options(dd, netSet->remote_ap_name);
+    lv_dropdown_set_options(dd,(char *)netSet->remote_ssid_name);
     lv_dropdown_set_dir(dd, LV_DIR_RIGHT);
    // lv_dropdown_set_symbol(dd, LV_SYMBOL_DOWN);
     lv_obj_align(dd, LV_ALIGN_TOP_LEFT, 0, 25);
@@ -63,6 +68,7 @@ static void fillSTATab(lv_obj_t* tab, network_settings_t* netSet) {
 void frmNetwork_init(void) {
 
     //char buf[TEXT_BUF_SIZE_LOCAL];
+	toSave=false;
     lv_obj_t* win = get_main_win();
     lv_obj_del(win);
     win = lv_win_create(lv_scr_act(), 30);

@@ -24,6 +24,7 @@
 #include "esp_system.h"
 #include "driver/gpio.h"
 #include "text_table.h"
+#include "network.h"
 
 
 /* Littlevgl specific */
@@ -82,11 +83,20 @@ static void guiTask(void *pvParameter);
 
 void app_main() {
 
+		esp_err_t ret = nvs_flash_init();
+	    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+	      ESP_ERROR_CHECK(nvs_flash_erase());
+	      ret = nvs_flash_init();
+	    }
+	    ESP_ERROR_CHECK(ret);
+
+
     /* If you want to use a task to create the graphic, you NEED to create a Pinned task
      * Otherwise there can be problem such as memory corruption and so on.
      * NOTE: When not using Wi-Fi nor Bluetooth you can pin the guiTask to core 0 */
     xTaskCreatePinnedToCore(guiTask, "gui", 4096*2, NULL, 0, NULL, 1); // 0 is working. 1 is crushing if FreeRTOS is set to run only on the first core
-    printf("Starting Version: %s %s %s\n",STR_GIT_VERSION,IDF_VER,esp_get_idf_version());
+    //printf("Starting Version: %s %sn",STR_GIT_VERSION,IDF_VER,esp_get_idf_version());
+    printf("Starting Version: %s. IDF: %s\n",STR_GIT_VERSION,esp_get_idf_version());
 }
 
 /* Creates a semaphore to handle concurrent call to lvgl stuff
@@ -180,6 +190,8 @@ static void guiTask(void *pvParameter) {
     ui_common_init();
     load_language();
     loadSettings();
+
+    network_init();
     frmProcess_init();
 
     while (1) {

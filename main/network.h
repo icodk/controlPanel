@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-
+void network_init(void);
 void ethernet_cfg_init(void);
 bool isEthernetSupported(void);
 void wifi_cfg_init(void);
