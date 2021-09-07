@@ -33,39 +33,45 @@
 static EventGroupHandle_t event_group_bits; //FreeRTOS facilitate event bits as flags
 static const char *TAG = "wifi_cfg";
 //------------------------------------------------------------
-static void wifi_scan(void)
+static void scan_results(void){
+
+	    uint16_t number = DEFAULT_SCAN_LIST_SIZE;
+	    wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
+	    uint16_t ap_count = 0;
+	    memset(ap_info, 0, sizeof(ap_info));
+
+		ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
+	    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
+	    ESP_LOGI(TAG, "Total APs scanned = %u", ap_count);
+	    for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
+	        ESP_LOGI(TAG, "SSID \t\t%s", ap_info[i].ssid);
+	        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
+	        printf("SSID \t\t%s RSSI \t\t%d",ap_info[i].ssid,ap_info[i].rssi);
+	        //print_auth_mode(ap_info[i].authmode);
+	        //printf("\nAuth. mode: %d",ap_info[i].authmode);
+	        if (ap_info[i].authmode != WIFI_AUTH_WEP) {
+	            //print_cipher_type(ap_info[i].pairwise_cipher, ap_info[i].group_cipher);
+	           // printf("\nCipher: %d %d",ap_info[i].pairwise_cipher,ap_info[i].group_cipher);
+	        }
+	        ESP_LOGI(TAG, "Channel \t\t%d\n", ap_info[i].primary);
+	    }
+
+
+}
+//------------------------------------------------------------
+static void wifi_scan_init(void)
 {
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
-    assert(sta_netif);
 
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    uint16_t number = DEFAULT_SCAN_LIST_SIZE;
-    wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
-    uint16_t ap_count = 0;
-    memset(ap_info, 0, sizeof(ap_info));
+ //   uint16_t number = DEFAULT_SCAN_LIST_SIZE;
+//    wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
+//    uint16_t ap_count = 0;
+//    memset(ap_info, 0, sizeof(ap_info));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_start());
-    esp_wifi_scan_start(NULL, true);
-    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
-    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
-    ESP_LOGI(TAG, "Total APs scanned = %u", ap_count);
-    for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
-        ESP_LOGI(TAG, "SSID \t\t%s", ap_info[i].ssid);
-        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
-        printf("SSID \t\t%s RSSI \t\t%d",ap_info[i].ssid,ap_info[i].rssi);
-        //print_auth_mode(ap_info[i].authmode);
-        //printf("\nAuth. mode: %d",ap_info[i].authmode);
-        if (ap_info[i].authmode != WIFI_AUTH_WEP) {
-            //print_cipher_type(ap_info[i].pairwise_cipher, ap_info[i].group_cipher);
-           // printf("\nCipher: %d %d",ap_info[i].pairwise_cipher,ap_info[i].group_cipher);
-        }
-        ESP_LOGI(TAG, "Channel \t\t%d\n", ap_info[i].primary);
-    }
+   // ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+   // ESP_ERROR_CHECK(esp_wifi_start());
+
+    esp_wifi_scan_start(NULL, false); //none blocking scan
 
 }
 
@@ -87,9 +93,14 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 					break;
 				case	WIFI_EVENT_STA_DISCONNECTED:
 					printf("Event: WIFI_EVENT_STA_DISCONNECTED\n" );
-						esp_wifi_connect();
-					break;
+					 	 esp_wifi_scan_start(NULL, false); //none blocking scan
 
+					break;
+				case	WIFI_EVENT_SCAN_DONE:
+					printf("Event: WIFI_EVENT_SCAN_DONE\n" );
+					scan_results();
+					esp_wifi_connect();
+					break;
 				default:
 						break;
 				}
@@ -99,7 +110,7 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 			case IP_EVENT_STA_GOT_IP:
 				printf("Event: IP_EVENT_STA_GOT_IP\n" );
 				 ip_event = (ip_event_got_ip_t*) event_data;
-				 ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&ip_event->ip_info.ip));
+				 ESP_LOGW(TAG, "got ip:" IPSTR, IP2STR(&ip_event->ip_info.ip));
 				break;
 			default:
 				break;
@@ -188,6 +199,7 @@ static void wifi_STA_cfg_init(network_settings_t * netSet) {
 	    ESP_ERROR_CHECK(esp_wifi_start() );
 
 	    ESP_LOGI(TAG, "wifi_init_sta finished.");
+
 
 	    /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
 	     * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
