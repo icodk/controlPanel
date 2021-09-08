@@ -16,6 +16,7 @@
 
 extern void  frmProcess_init(void);
 extern bool isEthernetSupported(void);
+extern void  wifi_scan_init(lv_obj_t* list);
 static bool toSave;
 /*-------------------------------------------------*/
 static void home_btn_event_handler(lv_event_t* e) {
@@ -31,8 +32,11 @@ static void home_btn_event_handler(lv_event_t* e) {
 static void ap_list_event_handler(lv_event_t* e) {
     //lv_event_code_t code = lv_event_get_code(e);
     LV_LOG_USER("DD event %d ", e->code);
-    lv_obj_t * list= lv_event_get_target(e);
-    lv_dropdown_set_options(list, "kuku\n");
+    lv_obj_t* list = lv_event_get_target(e);
+        if (e->code == LV_EVENT_PRESSED) {
+            wifi_scan_init(list);
+        }
+
 
 }
 
@@ -52,14 +56,35 @@ static void enable_event_handler(lv_event_t* e) {
     }
 }
 //--------------------------------------------------
-static void fillSTATab(lv_obj_t* tab, network_settings_t* netSet) {
+static void fill_STA_tab(lv_obj_t* tab, network_settings_t* netSet) {
     lv_obj_t* dd;
     dd = lv_dropdown_create(tab);
+    lv_obj_set_width(dd, tab->coords.x2/ 2);
     lv_dropdown_set_options(dd,(char *)netSet->remote_ssid_name);
     lv_dropdown_set_dir(dd, LV_DIR_RIGHT);
    // lv_dropdown_set_symbol(dd, LV_SYMBOL_DOWN);
     lv_obj_align(dd, LV_ALIGN_TOP_LEFT, 0, 25);
     lv_obj_add_event_cb(dd, ap_list_event_handler, LV_EVENT_PRESSED, NULL);
+
+    //---- password field
+       lv_obj_t* passField= lv_textarea_create(tab);
+       lv_textarea_set_one_line(passField, true);
+       lv_obj_set_width(passField, tab->coords.x2/ 2);
+       lv_obj_align(passField, LV_ALIGN_TOP_LEFT, 0, 50);
+       lv_textarea_set_max_length(passField, 62);
+       //lv_snprintf(buf, TEXT_BUF_SIZE_LOCAL, int_fmt, counter->min);
+       lv_textarea_set_text(passField,(char *)netSet->remote_ssid_pass);
+
+       //lv_obj_add_event_cb(minVal, ta_event_cb, LV_EVENT_ALL, &counter->min);
+
+       // label the field
+       lv_obj_t* pass_label = lv_label_create(tab);
+       lv_label_set_text(pass_label , get_text(T_MIN));
+       lv_obj_align(pass_label , LV_ALIGN_LEFT_MID, 20, 0);
+
+
+
+
 
 
 }
@@ -87,7 +112,7 @@ void frmNetwork_init(void) {
     lv_checkbox_set_text(cb, get_text(T_ENABLE_STA));
     if (netSet->sta_enable) {
         lv_obj_add_state(cb, LV_STATE_CHECKED);
-        fillSTATab(tabWifiSTA,netSet);
+        fill_STA_tab(tabWifiSTA,netSet);
     }
     lv_obj_add_event_cb(cb, enable_event_handler, LV_EVENT_VALUE_CHANGED, (void *)&netSet->sta_enable);
     //------

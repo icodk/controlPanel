@@ -28,8 +28,9 @@
 
 
 #define DEFAULT_SCAN_LIST_SIZE CONFIG_WIFI_PROV_SCAN_MAX_ENTRIES //CONFIG_EXAMPLE_SCAN_LIST_SIZE
-#define WIFI_CONNECTED_BIT BIT0
-#define WIFI_FAIL_BIT      BIT1
+#define WIFI_CONNECTED_BIT	 	BIT0
+#define WIFI_FAIL_BIT      		BIT1
+#define WIFI_SCAN_END_BIT      	BIT2
 static EventGroupHandle_t event_group_bits; //FreeRTOS facilitate event bits as flags
 static const char *TAG = "wifi_cfg";
 //------------------------------------------------------------
@@ -44,34 +45,18 @@ static void scan_results(void){
 	    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
 	    ESP_LOGI(TAG, "Total APs scanned = %u", ap_count);
 	    for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
-	        ESP_LOGI(TAG, "SSID \t\t%s", ap_info[i].ssid);
-	        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
-	        printf("SSID \t\t%s RSSI \t\t%d",ap_info[i].ssid,ap_info[i].rssi);
+	       // ESP_LOGI(TAG, "SSID %s", ap_info[i].ssid);
+	       // ESP_LOGI(TAG, "RSSI %d", ap_info[i].rssi);
+	        printf("SSID: %s RSSI: %d\n",ap_info[i].ssid,ap_info[i].rssi);
 	        //print_auth_mode(ap_info[i].authmode);
 	        //printf("\nAuth. mode: %d",ap_info[i].authmode);
 	        if (ap_info[i].authmode != WIFI_AUTH_WEP) {
 	            //print_cipher_type(ap_info[i].pairwise_cipher, ap_info[i].group_cipher);
 	           // printf("\nCipher: %d %d",ap_info[i].pairwise_cipher,ap_info[i].group_cipher);
 	        }
-	        ESP_LOGI(TAG, "Channel \t\t%d\n", ap_info[i].primary);
+	        //ESP_LOGI(TAG, "Channel \t\t%d\n", ap_info[i].primary);
 	    }
 
-
-}
-//------------------------------------------------------------
-static void wifi_scan_init(void)
-{
-
-
- //   uint16_t number = DEFAULT_SCAN_LIST_SIZE;
-//    wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
-//    uint16_t ap_count = 0;
-//    memset(ap_info, 0, sizeof(ap_info));
-
-   // ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-   // ESP_ERROR_CHECK(esp_wifi_start());
-
-    esp_wifi_scan_start(NULL, false); //none blocking scan
 
 }
 
@@ -98,10 +83,12 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 					break;
 				case	WIFI_EVENT_SCAN_DONE:
 					printf("Event: WIFI_EVENT_SCAN_DONE\n" );
-					scan_results();
-					esp_wifi_connect();
+					xEventGroupSetBits(event_group_bits, WIFI_SCAN_END_BIT);
+					//scan_results();
+
 					break;
 				default:
+					printf("Unknown WIFI Based event:  Event Id:%d\n",event_id );
 						break;
 				}
 
@@ -113,6 +100,7 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 				 ESP_LOGW(TAG, "got ip:" IPSTR, IP2STR(&ip_event->ip_info.ip));
 				break;
 			default:
+				printf("Unknown IP Based event:  Event Id:%d\n",event_id );
 				break;
 			}
 
@@ -141,6 +129,23 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 */
 }
 //--------------------------------------
+//------------------------------------------------------------
+void wifi_scan_init(void)
+{
+
+
+ //   uint16_t number = DEFAULT_SCAN_LIST_SIZE;
+//    wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
+//    uint16_t ap_count = 0;
+//    memset(ap_info, 0, sizeof(ap_info));
+
+   // ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+   // ESP_ERROR_CHECK(esp_wifi_start());
+
+    esp_wifi_scan_start(NULL, false); //none blocking scan
+
+}
+
 //--------------------------------------
 //--------------------------------------
 
@@ -150,7 +155,7 @@ void wifi_AP_cfg_init(void) {
 
 	printf("Wifi_AP_cfg_init()\n");
 }
-
+//--------------------------------------
 static void wifi_STA_cfg_init(network_settings_t * netSet) {
 
 		printf("Wifi_STA_cfg_init()\n");
@@ -266,7 +271,20 @@ void network_init(void){
    }
 
 }
+//--------------------------------------
 bool isWifisupported(void) {
     return true;
 }
+//--------------------------------------
+void network_monitor(void){
+	EventBits_t bits=xEventGroupClearBits( event_group_bits, WIFI_SCAN_END_BIT);
+	//printf("Bits: %d\n",bits);
+	if(bits!=0){
+		printf("----Bits: %d\n",bits);
+		scan_results();
+		esp_wifi_connect();
+	}
+}
+
+
 

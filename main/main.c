@@ -57,13 +57,13 @@
 
 extern void processMain(void);
 extern void frmProcess_init(void);
-
+extern void network_monitor(void);
 
 
 /*********************
  *      DEFINES
  *********************/
-#define TAG "demo"
+#define TAG "MAIN"
 #define LV_TICK_PERIOD_MS 1
 
 /**********************
@@ -72,7 +72,7 @@ extern void frmProcess_init(void);
 static void lv_tick_task(void *arg);
 static void guiTask(void *pvParameter);
 //static void create_demo_application(void);
-
+static esp_timer_handle_t periodic_timer;
 /**********************
  *   APPLICATION MAIN
  **********************/
@@ -181,9 +181,11 @@ static void guiTask(void *pvParameter) {
         .callback = &lv_tick_task,
         .name = "periodic_gui"
     };
-    esp_timer_handle_t periodic_timer;
+
+
     ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
+    //ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
+    ESP_ERROR_CHECK(esp_timer_start_once(periodic_timer, LV_TICK_PERIOD_MS * 1000));
 
     /* Create the demo application */
    // create_demo_application();
@@ -206,7 +208,10 @@ static void guiTask(void *pvParameter) {
             processMain();
             xSemaphoreGive(xGuiSemaphore);
        }
+        network_monitor();
+       // vTaskDelay(pdMS_TO_TICKS(10));
         vTaskDelay(pdMS_TO_TICKS(10));
+
     }
 
 //    /* A task should NEVER return */
@@ -265,5 +270,9 @@ static void guiTask(void *pvParameter) {
 static void lv_tick_task(void *arg) {
     (void) arg;
     //printf(".");
+
     lv_tick_inc(LV_TICK_PERIOD_MS);
+    ESP_ERROR_CHECK(esp_timer_start_once(periodic_timer, LV_TICK_PERIOD_MS * 1000));
+
+
 }
