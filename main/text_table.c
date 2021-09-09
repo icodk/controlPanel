@@ -63,6 +63,7 @@ static const  char *  danish[] = {
     , "Enable STA"
     , "Enable AP"
     , "Enable Ethernet"
+    ,"Password"
     
 
 };
@@ -90,6 +91,7 @@ static const  char *  english[] = {
     ,"Ethernet"
     ,"Wifi AP"
     ,"Wifi ST"
+    ,"Password"
 
 };
 

@@ -50,6 +50,7 @@ extern "C" {
         , T_ENABLE_STA
         , T_ENABLE_AP
         , T_ENABLE_ETH
+        , T_PASSWORD
 
 
 	} text_ndx_t;

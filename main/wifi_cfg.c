@@ -31,8 +31,18 @@
 #define WIFI_CONNECTED_BIT	 	BIT0
 #define WIFI_FAIL_BIT      		BIT1
 #define WIFI_SCAN_END_BIT      	BIT2
+#define WIFI_DISCONNECTED_BIT 	BIT3
 static EventGroupHandle_t event_group_bits; //FreeRTOS facilitate event bits as flags
 static const char *TAG = "wifi_cfg";
+typedef enum _NETWORK_STATE{
+		NETWORK_INIT
+		,NETWORK_WIFI_CONNECING
+		,NETWORK_WIFI_CONNECTED
+		,NETWORK_WIFI_SCAN_START
+		,NETWORK_WIFI_SCANNING
+} network_state_t;
+static network_state_t net_state=NETWORK_INIT;
+static lv_obj_t* dd_list;
 //------------------------------------------------------------
 static void scan_results(void){
 
@@ -75,15 +85,20 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 				case WIFI_EVENT_STA_START:
 					printf("Event: WIFI_EVENT_STA_START\n" );
 					esp_wifi_connect();
+					net_state=NETWORK_WIFI_CONNECING;
 					break;
+				case	WIFI_EVENT_STA_CONNECTED:
+						net_state=NETWORK_WIFI_CONNECTED;
+						break;
 				case	WIFI_EVENT_STA_DISCONNECTED:
 					printf("Event: WIFI_EVENT_STA_DISCONNECTED\n" );
-					 	 esp_wifi_scan_start(NULL, false); //none blocking scan
-
+					 	 //esp_wifi_scan_start(NULL, false); //none blocking scan
+						xEventGroupSetBits(event_group_bits, WIFI_DISCONNECTED_BIT);
 					break;
 				case	WIFI_EVENT_SCAN_DONE:
 					printf("Event: WIFI_EVENT_SCAN_DONE\n" );
 					xEventGroupSetBits(event_group_bits, WIFI_SCAN_END_BIT);
+
 					//scan_results();
 
 					break;
@@ -129,8 +144,26 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 */
 }
 //--------------------------------------
+static void fill_network_list(void){
+
+		uint16_t number = DEFAULT_SCAN_LIST_SIZE;
+		 wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
+		 uint16_t ap_count = 0;
+		 memset(ap_info, 0, sizeof(ap_info));
+
+		ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
+		ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
+		ESP_LOGI(TAG, "Total APs scanned = %u", ap_count);
+		lv_dropdown_clear_options(dd_list);
+		for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
+			lv_dropdown_add_option(dd_list,(char *)ap_info[i].ssid , i);
+			printf("SSID: %s RSSI: %d\n",ap_info[i].ssid,ap_info[i].rssi);
+		}
+		lv_event_send(dd_list, LV_EVENT_REFRESH ,0 );
+
+}
 //------------------------------------------------------------
-void wifi_scan_init(void)
+void wifi_scan_init(lv_obj_t* list )
 {
 
 
@@ -142,7 +175,57 @@ void wifi_scan_init(void)
    // ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
    // ESP_ERROR_CHECK(esp_wifi_start());
 
-    esp_wifi_scan_start(NULL, false); //none blocking scan
+	dd_list=list; // signal to start scanning
+	return;
+
+	///////////////////////////////
+	esp_wifi_disconnect();
+	printf("--Wait for disconnect\n" );
+	EventBits_t bits = xEventGroupWaitBits(event_group_bits,
+					WIFI_DISCONNECTED_BIT | WIFI_FAIL_BIT,
+					pdTRUE,	// clear bits on exit
+					pdFALSE, //
+	   	   	   	   portMAX_DELAY);
+
+	if (bits & WIFI_DISCONNECTED_BIT ) {
+
+
+	}
+	printf("--Starting SCANE\n" );
+    esp_wifi_scan_start(NULL, true); //blocking scan
+     bits = xEventGroupWaitBits(event_group_bits,
+    		 WIFI_SCAN_END_BIT | WIFI_FAIL_BIT,
+				pdTRUE,	// clear bits on exit
+				pdFALSE,
+   	   	   	   portMAX_DELAY);
+     printf("--SCANE Finished with bits %d\n",bits );
+    if (bits & WIFI_SCAN_END_BIT) {
+    	 uint16_t number = DEFAULT_SCAN_LIST_SIZE;
+		 wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
+		 uint16_t ap_count = 0;
+		 memset(ap_info, 0, sizeof(ap_info));
+
+		ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
+		ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
+		ESP_LOGI(TAG, "Total APs scanned = %u", ap_count);
+		lv_dropdown_clear_options(list);
+		for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
+			lv_dropdown_add_option(list,(char *)ap_info[i].ssid , i);
+			printf("SSID: %s RSSI: %d\n",ap_info[i].ssid,ap_info[i].rssi);
+		}
+
+
+    }
+    esp_wifi_connect();
+   //	        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
+   //	                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+   //	    } else if (bits & WIFI_FAIL_BIT) {
+   //	        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
+   //	                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+   //	    } else {
+   //	        ESP_LOGE(TAG, "UNEXPECTED EVENT");
+   //	    }
+
 
 }
 
@@ -201,7 +284,7 @@ static void wifi_STA_cfg_init(network_settings_t * netSet) {
 
 	    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
 	    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
-	    ESP_ERROR_CHECK(esp_wifi_start() );
+	    ESP_ERROR_CHECK(esp_wifi_start() ); // this will trigger WIFI_EVENT_STA_START and a call to esp_wifi_connect();
 
 	    ESP_LOGI(TAG, "wifi_init_sta finished.");
 
@@ -277,13 +360,80 @@ bool isWifisupported(void) {
 }
 //--------------------------------------
 void network_monitor(void){
-	EventBits_t bits=xEventGroupClearBits( event_group_bits, WIFI_SCAN_END_BIT);
-	//printf("Bits: %d\n",bits);
-	if(bits!=0){
-		printf("----Bits: %d\n",bits);
-		scan_results();
-		esp_wifi_connect();
+
+	EventBits_t bits;
+	//printf("network_monitor %d\n",net_state);
+	switch(net_state){
+	case	NETWORK_INIT:
+		if(dd_list!=NULL){ // a request from UI for network scan
+			xEventGroupSetBits(event_group_bits,WIFI_DISCONNECTED_BIT); // simulate disconnect
+				net_state = NETWORK_WIFI_SCAN_START;
+				break;
+		}
+		break;
+	case 	NETWORK_WIFI_CONNECING:
+		if(dd_list!=NULL){ // a request from UI for network scan
+
+			//xEventGroupSetBits(event_group_bits, WIFI_SCAN_REQUEST_BIT);
+			//esp_wifi_disconnect();
+			net_state = NETWORK_WIFI_SCAN_START;
+			break;
+		}
+
+
+			bits=xEventGroupGetBits(event_group_bits);
+			if(bits & WIFI_DISCONNECTED_BIT){
+				xEventGroupClearBits(event_group_bits,WIFI_DISCONNECTED_BIT);
+				printf("Re Connecting...\n");
+				esp_wifi_connect();
+				break;
+			}
+			if(bits & WIFI_CONNECTED_BIT){
+				net_state=NETWORK_WIFI_CONNECTED;
+				break;
+			}
+			break;
+	case 	NETWORK_WIFI_CONNECTED:
+			bits=xEventGroupGetBits(event_group_bits);
+			if(bits & WIFI_DISCONNECTED_BIT){
+				xEventGroupClearBits(event_group_bits,WIFI_CONNECTED_BIT| WIFI_DISCONNECTED_BIT);
+				net_state=NETWORK_WIFI_CONNECING;
+				esp_wifi_connect();
+				break;
+			}
+			break;
+	case 	NETWORK_WIFI_SCAN_START:
+			bits=xEventGroupGetBits(event_group_bits);
+			if(bits & WIFI_DISCONNECTED_BIT){ // waiting for disconnect bit
+				xEventGroupClearBits(event_group_bits,WIFI_DISCONNECTED_BIT | WIFI_SCAN_END_BIT);
+				printf("start scanning...\n");
+				esp_wifi_scan_start(NULL, false); //none blocking scan
+				net_state=NETWORK_WIFI_SCANNING;
+			}
+		break;
+	case 	NETWORK_WIFI_SCANNING:
+			bits=xEventGroupGetBits(event_group_bits);
+			if(bits & WIFI_SCAN_END_BIT){ // waiting for scan end bit
+				fill_network_list();
+				net_state=NETWORK_WIFI_CONNECING;
+				dd_list=NULL;
+				net_state = NETWORK_INIT; // Wait for the user to select a new ssid before reconnecting
+			}
+
+			break;
+	default:
+		break;
+
 	}
+
+
+//	bits=xEventGroupClearBits( event_group_bits, WIFI_SCAN_END_BIT);
+//	//printf("Bits: %d\n",bits);
+//	if(bits!=0){
+//		printf("----Bits: %d\n",bits);
+//		scan_results();
+//		esp_wifi_connect();
+//	}
 }
 
 
