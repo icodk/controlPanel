@@ -17,6 +17,7 @@
 extern void  frmProcess_init(void);
 extern bool isEthernetSupported(void);
 extern void wifi_scan_init(lv_obj_t* list);
+extern void wifi_network_selected(void);
 static bool toSave;
 static lv_obj_t* kb;
 //----------------------------------------------
@@ -33,7 +34,7 @@ static void ta_event_cb(lv_event_t* e)
     LV_LOG_USER("Event code: %d ", e->code);
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t* ta = lv_event_get_target(e);
-    char* field = lv_event_get_user_data(e);
+    char* pass = lv_event_get_user_data(e);
     lv_obj_t* win = get_main_win();
     buf[0] = 0;
     if (code == LV_EVENT_FOCUSED) {
@@ -63,17 +64,13 @@ static void ta_event_cb(lv_event_t* e)
             kb = NULL;
         }
         lv_obj_clear_state(ta, LV_STATE_FOCUSED);
+        lv_indev_reset(NULL, ta);
         //---- save the values to the fields
         //const char* txt = lv_textarea_get_text(ta);
-        lv_memcpy(field, lv_textarea_get_text(ta), strlen(lv_textarea_get_text(ta)));
-       // *field= lv_textarea_get_text(ta);
 
-        //*field = (int32_t)atoi(txt);
+        lv_memcpy(pass, lv_textarea_get_text(ta),1+ strlen(lv_textarea_get_text(ta)));
+        wifi_network_selected(); // reconnect
 
-        //if (*field != (int32_t)atoi(txt)) {
-        //    *field = (int32_t)atoi(txt);
-        //    toSave = true;
-        //}
 
 
     } else if (code == LV_EVENT_CANCEL) {
@@ -88,7 +85,7 @@ static void ta_event_cb(lv_event_t* e)
         lv_indev_reset(NULL, ta);   /*To forget the last clicked object to make it focusable again*/
         // cancel- use the old value
        // lv_snprintf(buf, TEXT_BUF_SIZE_LOCAL, "%d", *field);
-        lv_textarea_set_text(ta, field);
+        lv_textarea_set_text(ta, pass);
 
     }
 }
@@ -97,18 +94,31 @@ static void ta_event_cb(lv_event_t* e)
 
 static void ap_list_event_handler(lv_event_t* e) {
     //lv_event_code_t code = lv_event_get_code(e);
+	static lv_obj_t * spinner=NULL;
     LV_LOG_USER("DD event %d ", e->code);
-    printf("DD event %d\n", e->code);
+    //printf("DD event %d\n", e->code);
     lv_obj_t* list = lv_event_get_target(e);
     if (e->code == LV_EVENT_PRESSED) {
-    	lv_obj_t * spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
-    	    lv_obj_set_size(spinner, 100, 100);
+
+    		spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
+    	    lv_obj_set_size(spinner, 50, 50);
     	    lv_obj_center(spinner);
     	    wifi_scan_init(list);
+    	    lv_dropdown_close(list);
     	    //lv_obj_del(spinner);
     }
-    
-    
+    if (e->code == LV_EVENT_REFRESH) {
+    	lv_obj_del(spinner);
+    	spinner=NULL;
+    	lv_dropdown_close(list);
+    	lv_dropdown_open(list);
+    }
+    if (e->code == LV_EVENT_VALUE_CHANGED) { // user selected a network
+    	network_settings_t *netSet = get_network_settings();
+    	 lv_dropdown_get_selected_str(list,(char *)netSet->remote_ssid_name,32);
+
+    	wifi_network_selected();
+    }
 
 }
 
@@ -136,7 +146,7 @@ static void fill_STA_tab(lv_obj_t* tab, network_settings_t* netSet) {
     lv_dropdown_set_dir(dd, LV_DIR_RIGHT);
    // lv_dropdown_set_symbol(dd, LV_SYMBOL_DOWN);
     lv_obj_align(dd, LV_ALIGN_TOP_LEFT, 0, 25);
-    lv_obj_add_event_cb(dd, ap_list_event_handler, LV_EVENT_PRESSED, NULL);
+    lv_obj_add_event_cb(dd, ap_list_event_handler, LV_EVENT_ALL, NULL);
 
     //---- password field
     // label the field
