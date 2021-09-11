@@ -43,6 +43,7 @@ typedef enum _NETWORK_STATE{
 } network_state_t;
 static network_state_t net_state=NETWORK_INIT;
 static lv_obj_t* dd_list;
+static wifi_event_t last_event_id=WIFI_EVENT_STA_DISCONNECTED;
 //------------------------------------------------------------
 //static void scan_results(void){
 //
@@ -89,11 +90,13 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 					break;
 				case	WIFI_EVENT_STA_CONNECTED:
 						net_state=NETWORK_WIFI_CONNECTED;
+						last_event_id=WIFI_EVENT_STA_CONNECTED;
 						break;
 				case	WIFI_EVENT_STA_DISCONNECTED:
 					printf("Event: WIFI_EVENT_STA_DISCONNECTED\n" );
 					 	 //esp_wifi_scan_start(NULL, false); //none blocking scan
 						xEventGroupSetBits(event_group_bits, WIFI_DISCONNECTED_BIT);
+						last_event_id=WIFI_EVENT_STA_DISCONNECTED;
 					break;
 				case	WIFI_EVENT_SCAN_DONE:
 					printf("Event: WIFI_EVENT_SCAN_DONE\n" );
@@ -113,6 +116,7 @@ static void network_conn_event_handler(void* arg, esp_event_base_t event_base,
 				printf("Event: IP_EVENT_STA_GOT_IP\n" );
 				 ip_event = (ip_event_got_ip_t*) event_data;
 				 ESP_LOGW(TAG, "got ip:" IPSTR, IP2STR(&ip_event->ip_info.ip));
+
 				break;
 			default:
 				printf("Unknown IP Based event:  Event Id:%d\n",event_id );
@@ -249,6 +253,9 @@ static void wifi_STA_cfg_init(void) {
 
 
 		network_settings_t * netSet=get_network_settings();
+		if(netSet->sta_enable==false){
+			return;
+		}
 		 ESP_ERROR_CHECK(esp_wifi_stop());
 
 	    esp_event_handler_instance_t instance_any_id;
@@ -327,6 +334,9 @@ static void wifi_STA_cfg_init(void) {
 
 }
 //--------------------------------------
+bool isSTAConnected(void){
+	return last_event_id==WIFI_EVENT_STA_CONNECTED;
+}
 void wifi_network_selected(void){ // user has selected a network from the list
 
 	wifi_STA_cfg_init();

@@ -26,6 +26,7 @@
 
 extern void counter_conf_init(counter_id_t counterId);
 extern void frmMenu_init(void);
+extern bool isSTAConnected(void);
 
 static int8_t showDate= 0;
 //--------------------------------------------------
@@ -172,11 +173,16 @@ static void     updateFrmProcess(void) {
        if (lastSecond!=timeinfo.tm_sec ) {
                lastSecond = timeinfo.tm_sec;
                lv_obj_t** title = get_main_win_title();
+               char *staConnected="";
+               if(isSTAConnected()){
+            	   staConnected=LV_SYMBOL_WIFI;
+               }
+
                if (showDate > 0) {
                    showDate--;
-                   lv_label_set_text_fmt(*title, "%s     %02d-%02d-%02d", get_text(T_PROCESS), timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday);
+                   lv_label_set_text_fmt(*title, "%s     %02d-%02d-%02d ", get_text(T_PROCESS), timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday);
                } else {
-                   lv_label_set_text_fmt(*title, "%s     %02d:%02d:%02d", get_text(T_PROCESS), timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+                   lv_label_set_text_fmt(*title, "%s %s     %02d:%02d:%02d",staConnected, get_text(T_PROCESS), timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
                }
            }
 
