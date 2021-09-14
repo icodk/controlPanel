@@ -348,7 +348,6 @@ void wifi_network_selected(void){ // user has selected a network from the list
 //--------------------------------------
 void network_init(void){
 
-kuku
 	network_settings_t * netSet=get_network_settings();
 	if(!(netSet->sta_enable||netSet->ap_enable||netSet->eth_enable)){
 		ESP_LOGI(TAG, "No network is configured\n");
