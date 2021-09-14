@@ -13,4 +13,4 @@ jobs:
     - name: Checkout controlPanel rep
       uses: actions/checkout@v2
     - name: esp-idf build
-      uses: sebastianPsm/esp-idf-ci-action@1
+      uses: icodk/esp-idf-ci-action@1
