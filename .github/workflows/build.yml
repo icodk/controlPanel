@@ -12,5 +12,5 @@ jobs:
     steps:
     - name: Checkout controlPanel rep
       uses: actions/checkout@v2
-    - name: esp-idf build
+    - name:  build esp-idf + controlPanel
       uses: icodk/esp-idf-ci-action@1
