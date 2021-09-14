@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lvgl/lvgl.h"
+#include "esp_netif.h"
+#include "esp_eth.h"
 #include "dataStorage.h"
 #include "ui_common.h"
 #include "text_table.h"
@@ -149,9 +151,17 @@ static void drawFrmProcess(lv_obj_t* win) {
     
 }
 //------------------
+void ip4_to_str(char *buf, tcpip_adapter_ip_info_t * ipInfo){
+
+	uint8_t *bytePtr=&ipInfo->ip.addr;
+	//printf("IP: %d\n",*bytePtr);
+	sprintf(buf,IPSTR,*bytePtr,*(bytePtr+1),*(bytePtr+2),*(bytePtr+3));
+}
+//------------------
 static void     updateFrmProcess(void) {
     static int16_t lastSecond;
-    for (int i = 0; i < COUNTER_COUNT; i++) {
+
+    for (int i = 0; i < COUNTER_COUNT; i++) { // update the counters with a new value
         counter_t* cnt= get_counter(i);
         int32_t* cVal = get_current_count(i);
         (*cVal)++;
@@ -170,23 +180,32 @@ static void     updateFrmProcess(void) {
        //localtime_r(&now, &timeinfo);
        //localtime(&now);
        localtime_r(&now, &timeinfo);
-       if (lastSecond!=timeinfo.tm_sec ) {
-               lastSecond = timeinfo.tm_sec;
-               lv_obj_t** title = get_main_win_title();
-               char *staConnected="";
-               if(isSTAConnected()){
-            	   staConnected=LV_SYMBOL_WIFI;
-               }
+       char ipStr[60]={0};
+       if (lastSecond==timeinfo.tm_sec ) {
+    	   return;
+       }
 
-               if (showDate > 0) {
-                   showDate--;
-                   lv_label_set_text_fmt(*title, "%s     %02d-%02d-%02d ", get_text(T_PROCESS), timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday);
-               } else {
-                   lv_label_set_text_fmt(*title, "%s %s     %02d:%02d:%02d",staConnected, get_text(T_PROCESS), timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-               }
-           }
+       lastSecond = timeinfo.tm_sec;
+	   lv_obj_t** title = get_main_win_title();
+	   char *emptyStr="";
+	   char *staConnectedSymbol=emptyStr;
+	   if (showDate > 0) { // show date and STA IP address
+		   showDate--;
+		   ipStr[0]=0;
+		   if(isSTAConnected()){
+			   tcpip_adapter_ip_info_t ipInfo;
+			   // IP address.
+			   tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
+			   ip4_to_str(ipStr,&ipInfo);
+			   printf("IP: %s\n",ipStr);
+		   }
+		   lv_label_set_text_fmt(*title,"%s     %02d-%02d-%02d  %s", get_text(T_PROCESS), timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday,ipStr);
+	   }else{  if(isSTAConnected()){ // show time with wifi symbol
+		   	   	   staConnectedSymbol=LV_SYMBOL_WIFI;
+	   	   	   }
+		   	   lv_label_set_text_fmt(*title, "%s %s     %02d:%02d:%02d",staConnectedSymbol, get_text(T_PROCESS), timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 
-
+	   }
 
 #else
     SYSTEMTIME lt;// , st;

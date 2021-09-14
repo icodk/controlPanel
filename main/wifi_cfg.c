@@ -335,7 +335,10 @@ static void wifi_STA_cfg_init(void) {
 }
 //--------------------------------------
 bool isSTAConnected(void){
-	return last_event_id==WIFI_EVENT_STA_CONNECTED;
+
+	 tcpip_adapter_ip_info_t ipInfo;
+	 tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
+	return (last_event_id==WIFI_EVENT_STA_CONNECTED)&&(ipInfo.ip.addr!=0);
 }
 void wifi_network_selected(void){ // user has selected a network from the list
 
