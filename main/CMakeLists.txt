@@ -11,6 +11,7 @@ idf_component_register(SRCS main.c
 							menuStruct.c
 							ethernet_cfg.c
 							wifi_cfg.c
+							tempSensor.c
 							
 							)
 

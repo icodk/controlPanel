@@ -23,20 +23,24 @@ static lv_obj_t* kb;
 //----------------------------------------------
 static void home_btn_event_handler(lv_event_t* e) {
     (void)e; //ignore
-    
+    if(toSave){
+       	printf("Saving network settings...\n");
+       	toSave=false;
+       	saveNetworkSetting();
+    }
     frmProcess_init();
 }
 
 //----------------------------------------------
 static void ta_event_cb(lv_event_t* e)
 {
-    char buf[TEXT_BUF_SIZE_LOCAL + 1];
+    //char buf[TEXT_BUF_SIZE_LOCAL + 1];
     LV_LOG_USER("Event code: %d ", e->code);
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t* ta = lv_event_get_target(e);
     char* pass = lv_event_get_user_data(e);
     lv_obj_t* win = get_main_win();
-    buf[0] = 0;
+    //buf[0] = 0;
     if (code == LV_EVENT_FOCUSED) {
         if (lv_indev_get_type(lv_indev_get_act()) != LV_INDEV_TYPE_KEYPAD) {
             kb = lv_keyboard_create(lv_scr_act());
@@ -98,6 +102,7 @@ static void ap_list_event_handler(lv_event_t* e) {
     LV_LOG_USER("DD event %d ", e->code);
     //printf("DD event %d\n", e->code);
     lv_obj_t* list = lv_event_get_target(e);
+    char buf[32];
     if (e->code == LV_EVENT_PRESSED) {
 
     		spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
@@ -115,7 +120,14 @@ static void ap_list_event_handler(lv_event_t* e) {
     }
     if (e->code == LV_EVENT_VALUE_CHANGED) { // user selected a network
     	network_settings_t *netSet = get_network_settings();
-    	 lv_dropdown_get_selected_str(list,(char *)netSet->remote_ssid_name,32);
+    	printf("---------net ssid: %s\n",(char *)netSet->remote_ssid_name);
+    	lv_dropdown_get_selected_str(list,buf,32);
+    	printf("---------buf: %s\n",buf);
+    	if(strcmp(buf,(char *)netSet->remote_ssid_name)!=0){
+    		lv_dropdown_get_selected_str(list,(char *)netSet->remote_ssid_name,32);
+    		toSave=true;
+    		printf("Saving network settings \n");
+    	}
 
     	wifi_network_selected();
     }
@@ -130,8 +142,8 @@ static void enable_event_handler(lv_event_t* e) {
         bool * enable_mode= (bool *)lv_event_get_user_data(e);
         
 
-        const char* txt = lv_checkbox_get_text(obj);
-        const char* state = lv_obj_get_state(obj) & LV_STATE_CHECKED ? "Checked" : "Unchecked";
+        //const char* txt = lv_checkbox_get_text(obj);
+        //const char* state = lv_obj_get_state(obj) & LV_STATE_CHECKED ? "Checked" : "Unchecked";
         *enable_mode = lv_obj_get_state(obj) & LV_STATE_CHECKED ? true : false;
         LV_LOG_USER("%s: %s", txt, state);
     }
