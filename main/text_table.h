@@ -51,7 +51,10 @@ extern "C" {
         , T_ENABLE_AP
         , T_ENABLE_ETH
         , T_PASSWORD
-
+		, T_TEMP_C
+		, T_SETPOINT_C
+		, T_ERROR_C
+		, T_SEGMENT
 
 	} text_ndx_t;
 

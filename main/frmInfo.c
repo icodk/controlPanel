@@ -17,7 +17,8 @@ extern void  frmProcess_init(void);
 
 
 static void home_btn_event_handler(lv_event_t* e) {
-    frmProcess_init();
+    //frmProcess_init();
+    (*get_main_frm_init())();
 }
 
 

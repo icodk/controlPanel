@@ -12,6 +12,7 @@ idf_component_register(SRCS main.c
 							ethernet_cfg.c
 							wifi_cfg.c
 							tempSensor.c
+							frmOvenControl.c
 							
 							)
 

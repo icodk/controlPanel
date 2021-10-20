@@ -240,7 +240,7 @@ static void timer_cb(lv_timer_t* timer)
 
 //---------------------------------------
 
-void frmProcess_init() {
+void frmCounterProcess_init() {
 
     lv_obj_t* win = get_main_win();
     lv_obj_del(win);

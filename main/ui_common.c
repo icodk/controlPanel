@@ -17,6 +17,8 @@ static lv_obj_t* win = NULL;
 static lv_obj_t* win_title = NULL;
 static lv_timer_t* updateTimer = NULL;
 
+static  fncptr func_ptr;
+
 
 static void init_common_styles(void) {
 
@@ -116,3 +118,13 @@ lv_timer_t** get_updateTimer(void) {
     return &updateTimer;
 }
 //----------------------------------------------
+//----------------------------------------------
+fncptr get_main_frm_init(void) {
+
+    return func_ptr;
+}
+//----------------------------------------------
+void ui_set_main_frm_init(fncptr fnc) {
+
+    func_ptr=fnc;
+}

@@ -51,7 +51,8 @@ static void home_btn_event_handler(lv_event_t* e)
 {
    // lv_obj_t* obj = lv_event_get_target(e);
     LV_LOG_USER("Event code %d", e->code);
-    frmProcess_init();
+    //frmProcess_init();
+    (*get_main_frm_init())();
     //resetMsgBox();
 
 }

@@ -56,9 +56,10 @@
 //#endif
 
 extern void processMain(void);
-extern void frmProcess_init(void);
+extern void frmCounterProcess_init(void);
 extern void network_monitor(void);
-
+extern void ui_set_main_frm_init(void (*fncptr)(void));
+extern void  frmOvenControl_init(void);
 
 /*********************
  *      DEFINES
@@ -194,7 +195,18 @@ static void guiTask(void *pvParameter) {
     loadSettings();
 
     network_init();
-    frmProcess_init();
+
+#if 0
+    // counters application
+    frmCounterProcess_init();
+    ui_set_main_frm_init(frmCounterProcess_init);
+#else
+    // oven control application
+    frmOvenControl_init();
+    ui_set_main_frm_init(frmOvenControl_init);
+#endif
+
+   // frmProcess_init();
 
     while (1) {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */

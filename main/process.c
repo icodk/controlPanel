@@ -51,7 +51,7 @@ void processMain(void){ // called by guiTask() repeatedly
 	for (int i = 0; i < COUNTER_COUNT; i++) {
 	        //counter_t* cnt= get_counter(i);
 	        int32_t* cVal = get_current_count(i);
-	        (*cVal)++;
+	        (*cVal)--;
 	}
 
 

@@ -107,7 +107,8 @@ static void home_btn_event_handler(lv_event_t* e) {
 
     lv_timer_t** tmr = get_updateTimer();
     lv_timer_set_repeat_count(*tmr, 0);
-    frmProcess_init();
+    //frmProcess_init();
+    (*get_main_frm_init())();
 }
 
 //-------------------------------------------------------

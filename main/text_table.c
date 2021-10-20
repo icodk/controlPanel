@@ -64,6 +64,11 @@ static const  char *  danish[] = {
     , "Enable AP"
     , "Enable Ethernet"
     ,"Password"
+	,"Temp[C]:"
+	,"Setpoint[C]"
+	,"Error[C]"
+	,"Segment"
+
     
 
 };
@@ -92,6 +97,11 @@ static const  char *  english[] = {
     ,"Wifi AP"
     ,"Wifi ST"
     ,"Password"
+	,"Temp[C]:"
+	,"Setpoint[C]"
+	,"Error[C]"
+	,"Segment"
+
 
 };
 

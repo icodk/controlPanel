@@ -1,6 +1,9 @@
 How to add  new fonts 
 (2021-10-20 15:23:53)
 ---------------------------------------------------
+Example with 7 segments fonts from https://www.keshikan.net/fonts-e.html
+Download the latest relaes fonts-DSEG_v046.zip and unzip it to get to the ttf files
+
 1. Go to https://lvgl.io/tools/fontconverter15:23 
 2. Enter name of fonts (ex.: DSEG7_classic_bold_25)
 3. Enter size (Height in px) (25)
