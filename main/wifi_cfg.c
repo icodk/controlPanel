@@ -383,6 +383,14 @@ void network_init(void){
 bool isWifisupported(void) {
     return true;
 }
+
+//------------------
+void ip4_to_str(char *buf, tcpip_adapter_ip_info_t * ipInfo){
+
+	uint8_t *bytePtr=&ipInfo->ip.addr;
+	//printf("IP: %d\n",*bytePtr);
+	sprintf(buf,IPSTR,*bytePtr,*(bytePtr+1),*(bytePtr+2),*(bytePtr+3));
+}
 //--------------------------------------
 void network_monitor(void){
 

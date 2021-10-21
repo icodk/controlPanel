@@ -13,10 +13,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "esp_netif.h"
+#include "esp_eth.h"
 #include "lvgl/lvgl.h"
 #include "dataStorage.h"
 #include "ui_common.h"
 #include "text_table.h"
+#include "network.h"
+#include "menu.h"
 
 //#include "lvgl/examples/lv_examples.h"
 //#include "lv_demos/lv_demo.h"
@@ -24,9 +29,9 @@
 
 //static bool msgBoxOn = false;
 
-extern void counter_conf_init(counter_id_t counterId);
-extern void frmMenu_init(void);
-
+//extern void counter_conf_init(counter_id_t counterId);
+//extern void frmMenu_init(void);
+extern void  frmOvenControl_init(void);
 static int8_t showDate= 0;
 //--------------------------------------------------
 //static void resetMsgBox_event_cb(lv_event_t* e)
@@ -74,7 +79,7 @@ static void config_init(lv_event_t* e) {
     showDate = 0;
     lv_timer_t** tmr = get_updateTimer();
     lv_timer_set_repeat_count(*tmr , 0); // delete the timer, not needed when in conf. mode
-    counter_conf_init((counter_id_t)(e->user_data));
+    frmOvenControl_init();
 }
 
 
@@ -116,7 +121,7 @@ static void drawFrmProcess(lv_obj_t* win) {
     //lv_obj_t* win = get_main_win();
    
 
-    int i = 0; 
+    //int i = 0;
         // PANEL
         lv_obj_t* wcont = lv_win_get_content(win);  /*used to add content to the window*/
         lv_obj_t* panel = lv_obj_create(wcont);
@@ -184,37 +189,45 @@ static void drawFrmProcess(lv_obj_t* win) {
 //------------------
 static void     updateFrmProcess(void) {
     static int16_t lastSecond;
-    return;
-
-    for (int i = 0; i < COUNTER_COUNT; i++) {
-        counter_t* cnt= get_counter(i);
-        int32_t* cVal = get_current_count(i);
-        (*cVal)++;
-        lv_label_set_text_fmt(cnt->displayField, "%d", *cVal);
-    }
 
 #ifdef __GNUC__
     time_t now;
-    struct tm timeinfo;
+        struct tm timeinfo;
 
-       time(&now);
-       // Set timezone to China Standard Time
-       setenv("TZ", "UTC+2", 1);
-       tzset();
+           time(&now);
+           // Set timezone to China Standard Time
+           setenv("TZ", "UTC+2", 1);
+           tzset();
 
-       //localtime_r(&now, &timeinfo);
-       //localtime(&now);
-       localtime_r(&now, &timeinfo);
-       if (lastSecond!=timeinfo.tm_sec ) {
-               lastSecond = timeinfo.tm_sec;
-               lv_obj_t** title = get_main_win_title();
-               if (showDate > 0) {
-                   showDate--;
-                   lv_label_set_text_fmt(*title, "%s     %02d-%02d-%02d", get_text(T_PROCESS), timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday);
-               } else {
-                   lv_label_set_text_fmt(*title, "%s     %02d:%02d:%02d", get_text(T_PROCESS), timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-               }
+           //localtime_r(&now, &timeinfo);
+           //localtime(&now);
+           localtime_r(&now, &timeinfo);
+           char ipStr[60]={0};
+           if (lastSecond==timeinfo.tm_sec ) {
+        	   return;
            }
+
+           lastSecond = timeinfo.tm_sec;
+    	   lv_obj_t** title = get_main_win_title();
+    	   char *emptyStr="";
+    	   char *staConnectedSymbol=emptyStr;
+    	   if (showDate > 0) { // show date and STA IP address
+    		   showDate--;
+    		   ipStr[0]=0;
+    		   if(isSTAConnected()){
+    			   tcpip_adapter_ip_info_t ipInfo;
+    			   // IP address.
+    			   tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
+    			   ip4_to_str(ipStr,&ipInfo);
+    			   printf("IP: %s\n",ipStr);
+    		   }
+    		   lv_label_set_text_fmt(*title,"%s     %02d-%02d-%02d  %s", get_text(T_PROCESS), timeinfo.tm_year, timeinfo.tm_mon, timeinfo.tm_mday,ipStr);
+    	   }else{  if(isSTAConnected()){ // show time with wifi symbol
+    		   	   	   staConnectedSymbol=LV_SYMBOL_WIFI;
+    	   	   	   }
+    		   	   lv_label_set_text_fmt(*title, "%s %s     %02d:%02d:%02d",staConnectedSymbol, get_text(T_PROCESS), timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+
+    	   }
 
 
 
@@ -245,6 +258,7 @@ static void timer_cb(lv_timer_t* timer)
 {
     
     updateFrmProcess();
+
 //    LV_LOG_USER("Timer was called ");
 }
 

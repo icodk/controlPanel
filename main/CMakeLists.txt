@@ -1,5 +1,5 @@
 idf_component_register(SRCS main.c 
-							frmProcess.c 
+							frmCounter.c 
 							frmInfo.c
 							frmNetwork.c
 							dataStorage.c 
